@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AetherStore-login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center">
+
+        <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+            <!-- Logo Section -->
+            <div class="flex justify-center items-center mb-6 text-center">
+                <span class="text-xl font-bold text-indigo-600 block mb-0.1">AETHER STORE<br> 
+                <span class="text-sm font-medium text-indigo-500 block mt-0.1">Multi Agent E-Commerce Platform</span>
+            </div>            
+
+            <p class="text-sm text-gray-500 text-center mt-2">Sign in to continue</p>
+
+            <!-- Toggle Button -->
+            <div class="flex justify-center mt-6">
+                <button id="userBtn" class="toggle-btn bg-indigo-600 text-white px-4 py-2 rounded-l-md">User</button>
+                <button id="adminBtn" class="toggle-btn bg-gray-200 text-gray-800 px-4 py-2 rounded-r-md">Admin</button>
+            </div>
+
+            <!-- Login Form -->
+            <form action="#" method="POST" class="mt-6">
+                <div id="userFields">
+                    <label class="block text-sm font-medium text-gray-700">User Name</label>
+                    <div class="relative mt-2">
+                        <input type="name" name="name" placeholder="Enter your user name"
+                            class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    
+                    <label class="block text-sm font-medium text-gray-700 mt-4">Password</label>
+                    <div class="relative mt-2">
+                        <input type="password" name="password" placeholder="Enter your password"
+                            class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+
+                <div id="adminFields" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700">Admin Name</label>
+                    <div class="relative mt-2">
+                        <input type="name" name="name" placeholder="Enter your admin name"
+                            class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    
+
+                    <label class="block text-sm font-medium text-gray-700 mt-4">Password</label>
+                    <div class="relative mt-2">
+                        <input type="password" name="adminPassword" placeholder="Enter your password"
+                            class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>                
+                </div>
+
+                <button type="submit"
+                    class="mt-6 w-full bg-indigo-600 text-white py-3 rounded-md hover:bg-indigo-700 focus:ring focus:ring-indigo-500">
+                    Login
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Toggle Buttons -->
+    <script>
+        const userBtn = document.getElementById("userBtn");
+        const adminBtn = document.getElementById("adminBtn");
+        const userFields = document.getElementById("userFields");
+        const adminFields = document.getElementById("adminFields");
+
+        userBtn.addEventListener("click", () => {
+            userBtn.classList.add("bg-indigo-600", "text-white");
+            adminBtn.classList.remove("bg-indigo-600", "text-white");
+            adminBtn.classList.add("bg-gray-200", "text-gray-800");
+
+            userFields.classList.remove("hidden");
+            adminFields.classList.add("hidden");
+        });
+
+        adminBtn.addEventListener("click", () => {
+            adminBtn.classList.add("bg-indigo-600", "text-white");
+            userBtn.classList.remove("bg-indigo-600", "text-white");
+            userBtn.classList.add("bg-gray-200", "text-gray-800");
+
+            adminFields.classList.remove("hidden");
+            userFields.classList.add("hidden");
+        });
+    </script>
+</body>
+</html>

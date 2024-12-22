@@ -1,1 +1,1 @@
-# multiagent_ecommerce_platform
+# AETHER STORE (Multi Agent Ecommerce Platform)

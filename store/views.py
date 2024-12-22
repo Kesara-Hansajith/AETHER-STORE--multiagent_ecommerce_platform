@@ -1,0 +1,162 @@
+from django.shortcuts import render, redirect
+from django.views import View
+from rdflib import Graph, URIRef, Namespace, Literal
+from rdflib.namespace import RDF, XSD
+import uuid
+import os
+
+class BaseOntologyView(View):
+    def __init__(self):
+        super().__init__()
+        self.graph = Graph()
+        # Use os.path to handle file paths properly
+        ontology_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ontology', 'Ecommerce_Platform.xml')
+        self.graph.parse(ontology_path)
+        self.ECOM_NS = Namespace("http://www.example.org/ecommerce_ontology#")
+        
+    def save_graph(self):
+        ontology_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ontology', 'Ecommerce_Platform.xml')
+        self.graph.serialize(destination=ontology_path, format="xml")
+
+class ProductView(BaseOntologyView):
+    def get(self, request):
+        """Display list of products"""
+        products = self.get_all_products()
+        return render(request, 'store/products.html', {'products': products})
+    
+    def get_all_products(self):
+        products = []
+        for product in self.graph.subjects(RDF.type, self.ECOM_NS.Product):
+            name = self.graph.value(product, self.ECOM_NS.name)
+            price = self.graph.value(product, self.ECOM_NS.price)
+            stock = self.graph.value(product, self.ECOM_NS.stockLevel)
+            discount = self.graph.value(product, self.ECOM_NS.discount, default=Literal(0.0))
+            
+            products.append({
+                'name': str(name),
+                'price': float(price),
+                'stock': int(stock),
+                'discount': float(discount),
+                'final_price': round(float(price) * (1 - float(discount)/100), 2)
+            })
+        return products
+
+class OrderView(BaseOntologyView):
+    def get(self, request):
+        """Display order form"""
+        # Create a new instance of ProductView to use its methods
+        product_view = ProductView()
+        products = product_view.get_all_products()
+        return render(request, 'store/order_form.html', {'products': products})
+    
+    def post(self, request):
+        """Handle order placement"""
+        product_name = request.POST.get('product_name')
+        quantity = int(request.POST.get('quantity', 0))
+        
+        # Find product in RDF graph
+        product = next(
+            (p for p in self.graph.subjects(self.ECOM_NS.name, 
+            Literal(product_name, datatype=XSD.string))), None
+        )
+        
+        if not product:
+            return render(request, 'store/error.html', 
+                        {'message': 'Product not found'})
+        
+        stock = int(self.graph.value(product, self.ECOM_NS.stockLevel))
+        if stock < quantity:
+            return render(request, 'store/error.html', 
+                        {'message': f'Insufficient stock. Only {stock} available'})
+        
+        # Create order
+        order_id = str(uuid.uuid4())
+        order = URIRef(self.ECOM_NS + order_id)
+        
+        self.graph.add((order, RDF.type, self.ECOM_NS.Order))
+        self.graph.add((order, self.ECOM_NS.customer, Literal("John Doe", datatype=XSD.string)))
+        self.graph.add((order, self.ECOM_NS.product, product))
+        self.graph.add((order, self.ECOM_NS.quantity, Literal(quantity, datatype=XSD.integer)))
+        self.graph.add((order, self.ECOM_NS.status, Literal("pending", datatype=XSD.string)))
+        
+        # Update stock
+        self.graph.set((product, self.ECOM_NS.stockLevel, Literal(stock - quantity)))
+        
+        self.save_graph()
+        return redirect('order_success')
+    
+# views.py
+class ViewOrdersView(BaseOntologyView):
+    def get(self, request):
+        """Display all orders"""
+        orders = []
+        for order in self.graph.subjects(RDF.type, self.ECOM_NS.Order):
+            try:
+                # Get all values with safe fallbacks
+                customer = str(self.graph.value(order, self.ECOM_NS.customer) or "Unknown")
+                product = self.graph.value(order, self.ECOM_NS.product)
+                
+                # Handle case where product might not exist
+                if product:
+                    product_name = str(self.graph.value(product, self.ECOM_NS.name) or "Unknown Product")
+                else:
+                    product_name = "Unknown Product"
+                
+                # Handle missing quantity with safe conversion
+                quantity_value = self.graph.value(order, self.ECOM_NS.quantity)
+                quantity = int(quantity_value) if quantity_value is not None else 0
+                
+                # Handle missing status
+                status = str(self.graph.value(order, self.ECOM_NS.status) or "unknown")
+                
+                # Extract order ID from URI, with fallback
+                try:
+                    order_id = str(order).split('#')[-1]
+                except:
+                    order_id = "unknown"
+                
+                orders.append({
+                    'id': order_id,
+                    'customer': customer,
+                    'product': product_name,
+                    'quantity': quantity,
+                    'status': status
+                })
+            except Exception as e:
+                # Log the error but continue processing other orders
+                print(f"Error processing order {order}: {str(e)}")
+                continue
+            
+        return render(request, 'store/orders.html', {'orders': orders})
+
+class AdminView(BaseOntologyView):
+    def get(self, request):
+        """Display admin dashboard"""
+        # Create a new instance of ProductView to use its methods
+        product_view = ProductView()
+        products = product_view.get_all_products()
+        return render(request, 'store/admin/dashboard.html', {'products': products})
+    
+    def post(self, request):
+        """Handle adding new product"""
+        product_name = request.POST.get('name')
+        price = float(request.POST.get('price', 0))
+        stock_level = int(request.POST.get('stock_level', 0))
+        discount = float(request.POST.get('discount', 0))
+        
+        if not product_name or price <= 0:
+            return render(request, 'store/error.html', 
+                        {'message': 'Invalid product details'})
+        
+        product_id = product_name.lower().replace(" ", "_")
+        product = URIRef(self.ECOM_NS + product_id)
+        
+        # Add product to graph
+        self.graph.add((product, RDF.type, self.ECOM_NS.Product))
+        self.graph.add((product, self.ECOM_NS.name, Literal(product_name, datatype=XSD.string)))
+        self.graph.add((product, self.ECOM_NS.price, Literal(price, datatype=XSD.float)))
+        self.graph.add((product, self.ECOM_NS.stockLevel, Literal(stock_level, datatype=XSD.integer)))
+        self.graph.add((product, self.ECOM_NS.discount, Literal(discount, datatype=XSD.float)))
+        
+        self.save_graph()
+        return redirect('admin_dashboard')

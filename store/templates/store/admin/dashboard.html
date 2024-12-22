@@ -1,0 +1,90 @@
+{% extends "store/base.html" %}
+
+{% block content %}
+<div class="bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-10 p-8">
+    <div>
+        <!-- Admin Dashboard -->
+        <h3 class="text-2xl font-semibold text-gray-800">Admin Dashboard</h3>
+        <p class="text-sm text-gray-600 mt-2">Manage products and view system information!</p>
+    </div>
+
+    <!-- Add New Product Form -->
+    <div class="mt-8 border-t border-gray-200 pt-6">
+        <h4 class="text-lg font-medium text-gray-800">Add New Product</h4>
+        <form method="POST" class="mt-6 space-y-6">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
+                    <div class="relative mt-2">
+                        <input type="text" name="name" id="name" required placeholder="Enter product name"
+                            class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+                <div>
+                    <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+                    <div class="relative mt-2">
+                        <input type="number" step="0.01" name="price" id="price" required placeholder="Enter product price"
+                        class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+                <div>
+                    <label for="stock_level" class="block text-sm font-medium text-gray-700">Stock Level</label>
+                    <div class="relative mt-2">
+                        <input type="number" name="stock_level" id="stock_level" required placeholder="Enter stock level"
+                            class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+                <div>
+                    <label for="discount" class="block text-sm font-medium text-gray-700">Discount (%)</label>
+                    <div class="relative mt-2"></div>
+                        <input type="number" step="0.1" name="discount" id="discount" required placeholder="0"
+                            class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>                
+            
+            <div class="flex justify-end">
+                <button type="submit"
+                    class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                    <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Add Product
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Product List -->
+    <div class="mt-8 border-t border-gray-200 pt-6">
+        <h4 class="text-lg font-medium text-gray-800">Current Products</h4>
+        <p class="text-sm text-gray-500 mt-1">Review the list of products currently available in your store.</p>
+        <div class="mt-6">
+            <div class="shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Price</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Stock</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Discount</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for product in products %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ product.name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${{ product.price }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ product.stock }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ product.discount }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

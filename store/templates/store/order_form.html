@@ -1,0 +1,54 @@
+{% extends "store/base.html" %}
+
+{% block content %}
+<div class="bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-10 p-8">
+    <div>
+        <!-- Place Your Order -->
+        <h3 class="text-2xl font-semibold text-gray-800">Place Your Order</h3>
+        <p class="text-sm text-gray-600 mt-2">Choose a product, set the quantity, and place your order!</p>
+    <div>
+
+    <!-- Form -->
+    <div class="mt-8 border-t border-gray-200 pt-6">
+        <form method="POST" class="mt-6 space-y-6">
+            {% csrf_token %}
+
+            <!-- Product Dropdown -->
+            <div>
+                <label for="product_name" class="block text-sm font-medium text-gray-700">Select Product</label>
+                <div class="relative mt-2">
+                    <select name="product_name" id="product_name" required
+                        class="block w-full pl-3 pr-10 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="" disabled selected>Select a product</option>
+                        {% for product in products %}
+                        <option value="{{ product.name }}" {% if request.GET.product == product.name %}selected{% endif %}>
+                            {{ product.name }} - ${{ product.final_price }} (Stock: {{ product.stock }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Quantity Input -->
+            <div>
+                <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
+                <div class="relative mt-2">
+                    <input type="number" name="quantity" id="quantity" min="1" placeholder="Enter quantity"
+                        class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex justify-end">
+                <button type="submit"
+                    class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                    <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Place Order
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -29,15 +29,23 @@
                 <div class="hidden md:flex md:space-x-5 ml-auto">
                     <a href="{% url 'baseAdmin' %}" 
                         class="{% if request.resolver_match.url_name == 'baseAdmin' %}text-gray-900 border-indigo-500{% else %}text-gray-500 hover:text-gray-900 border-transparent hover:border-gray-300{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                        Admin Dashboard
+                            Admin Dashboard
                     </a>
                     <a href="{% url 'admin_product_list' %}" 
                         class="{% if request.resolver_match.url_name == 'admin_product_list' %}text-gray-900 border-indigo-500{% else %}text-gray-500 hover:text-gray-900 border-transparent hover:border-gray-300{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                        Products
+                            Products
                     </a>
                     <a href="{% url 'view_orders' %}" 
                         class="{% if request.resolver_match.url_name == 'view_orders' %}text-gray-900 border-indigo-500{% else %}text-gray-500 hover:text-gray-900 border-transparent hover:border-gray-300{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                        View Orders
+                            View Orders
+                    </a>
+                    <a href="{% url 'view_orders' %}" 
+                        class="{% if request.resolver_match.url_name == '' %}text-gray-900 border-indigo-500{% else %}text-gray-500 hover:text-gray-900 border-transparent hover:border-gray-300{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            View Feedback
+                    </a>
+                    <a href="{% url 'login' %}" 
+                        class="{% if request.resolver_match.url_name == 'login' %}text-gray-900 border-indigo-500{% else %}text-gray-500 hover:text-gray-900 border-transparent hover:border-gray-300{% endif %} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Log Out
                     </a>
                 </div>
             </div>
@@ -48,15 +56,23 @@
             <div class="space-y-1 px-2 pt-2 pb-3 sm:px-3">
                 <a href="{% url 'baseAdmin' %}" 
                     class="{% if request.resolver_match.url_name == 'baseAdmin' %}block text-gray-900 border-indigo-500{% else %}block text-gray-500 hover:text-gray-900 hover:border-gray-300{% endif %} px-3 py-2 rounded-md text-base font-medium">
-                    Admin Dashboard
+                        Admin Dashboard
                 </a>
                 <a href="{% url 'admin_product_list' %}" 
                     class="{% if request.resolver_match.url_name == 'admin_product_list' %}block text-gray-900 border-indigo-500{% else %}block text-gray-500 hover:text-gray-900 hover:border-gray-300{% endif %} px-3 py-2 rounded-md text-base font-medium">
-                    Products
+                        Products
                 </a>
                 <a href="{% url 'view_orders' %}" 
                     class="{% if request.resolver_match.url_name == 'view_orders' %}block text-gray-900 border-indigo-500{% else %}block text-gray-500 hover:text-gray-900 hover:border-gray-300{% endif %} px-3 py-2 rounded-md text-base font-medium">
-                    View Orders
+                        View Orders
+                </a>
+                <a href="{% url 'view_orders' %}" 
+                    class="{% if request.resolver_match.url_name == '' %}block text-gray-900 border-indigo-500{% else %}block text-gray-500 hover:text-gray-900 hover:border-gray-300{% endif %} px-3 py-2 rounded-md text-base font-medium">
+                        View Feedback
+                </a>
+                <a href="{% url 'login' %}" 
+                    class="{% if request.resolver_match.url_name == 'login' %}block text-gray-900 border-indigo-500{% else %}block text-gray-500 hover:text-gray-900 hover:border-gray-300{% endif %} px-3 py-2 rounded-md text-base font-medium">
+                        Log Out
                 </a>
             </div>
         </div>

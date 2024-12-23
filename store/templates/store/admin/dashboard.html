@@ -11,8 +11,9 @@
     <!-- Add New Product Form -->
     <div class="mt-8 border-t border-gray-200 pt-6">
         <h4 class="text-lg font-medium text-gray-800">Add New Product</h4>
-        <form method="POST" class="mt-6 space-y-6">
+        <form method="POST" enctype="multipart/form-data" class="mt-6 space-y-6">
             {% csrf_token %}
+            {{ form.as_p }}
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
@@ -22,10 +23,10 @@
                     </div>
                 </div>
                 <div>
-                    <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+                    <label for="price" class="block text-sm font-medium text-gray-700">Price (LKR)</label>
                     <div class="relative mt-2">
-                        <input type="number" step="0.01" name="price" id="price" required placeholder="Enter product price"
-                        class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="number" step="0.01" name="price" id="price" required placeholder="Enter product price in LKR" 
+                            class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                 </div>
                 <div>
@@ -37,12 +38,20 @@
                 </div>
                 <div>
                     <label for="discount" class="block text-sm font-medium text-gray-700">Discount (%)</label>
-                    <div class="relative mt-2"></div>
+                    <div class="relative mt-2">
                         <input type="number" step="0.1" name="discount" id="discount" required placeholder="0"
                             class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
-                </div>                
-            
+                </div>
+                <div class="sm:col-span-2">
+                    <label for="image" class="block text-sm font-medium text-gray-700">Product Image</label>
+                    <div class="relative mt-2">
+                        <input type="file" name="image" id="image" accept="image/*" required
+                            class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                    <p class="mt-1 text-sm text-gray-500">Upload an image of the product (JPEG, PNG).</p>
+                </div>
+            </div>
             <div class="flex justify-end">
                 <button type="submit"
                     class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
@@ -54,6 +63,7 @@
             </div>
         </form>
     </div>
+    
 
     <!-- Product List -->
     <div class="mt-8 border-t border-gray-200 pt-6">

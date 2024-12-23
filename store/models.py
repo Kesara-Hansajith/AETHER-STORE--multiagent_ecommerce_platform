@@ -19,6 +19,3 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order for {self.customer_name} - {self.product.name}"
-
-
-

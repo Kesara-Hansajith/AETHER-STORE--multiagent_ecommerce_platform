@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Feedback Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
+</head>
+
+<body class="bg-gray-100">
+
+
+
+
+    <!-- All Feedback -->
+    <div class="bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-10 p-8">
+        <div>
+            <h3 class="text-2xl font-semibold text-gray-800">All Feedback</h3>
+        </div>
+
+        <!-- Feedback List -->
+        <div class="mt-8 border-t border-gray-200 pt-6">
+                {% for feedback in feedbacks %}
+                <div class="p-4 bg-gray-50 shadow rounded-lg flex items-start space-x-4">
+                    <!-- User Details -->
+                
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <!-- Display Stars -->
+                            <div class="flex">
+                                {% for i in range(5) %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                        fill="{{ 'yellow' if i < feedback.rating else 'gray' }}"
+                                        class="bi bi-star">
+                                        <path d="M10 15.27l4.18 2.19-1.64-5.44L20 7.24l-5.39-.46L10 .99 7.39 6.78 2 7.24l4.46 4.78-1.64 5.44L10 15.27z" />
+                                    </svg>
+                                {% endfor %}
+                            </div>
+                            <p class="text-sm text-gray-600">{{ feedback.created_at|date:"F j, Y" }}</p>
+                        </div>
+                        <h3 class="font-semibold text-lg">{{ feedback.name }}</h3>
+                        <p class="text-gray-700 mt-1">{{ feedback.feedback }}</p>
+                    </div>
+                    <!-- Delete Button -->
+                    <div class="flex items-center space-x-2">
+                        <form action="{% url 'delete_feedback' feedback.id %}" method="POST" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="text-red-600 hover:underline">Delete</button>
+                        </form>
+                    </div>
+                </div>
+                {% empty %}
+                    <p class="text-center text-gray-500">No feedback available yet.</p>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-8 flex justify-center">
+                {% if feedbacks.has_previous %}
+                    <a href="?page={{ feedbacks.previous_page_number }}" class="px-4 py-2 bg-blue-600 text-white rounded-md">Previous</a>
+                {% endif %}
+                {% if feedbacks.has_next %}
+                    <a href="?page={{ feedbacks.next_page_number }}" class="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md">Next</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

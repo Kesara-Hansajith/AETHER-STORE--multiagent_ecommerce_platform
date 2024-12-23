@@ -1,20 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "store/baseAdmin.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Feedback Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
-</head>
-
-<body class="bg-gray-100">
-
-
-
-
-    <!-- All Feedback -->
+{% block content %}
     <div class="bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-10 p-8">
         <div>
             <h3 class="text-2xl font-semibold text-gray-800">All Feedback</h3>
@@ -67,6 +53,4 @@
             </div>
         </div>
     </div>
-</body>
-
-</html>
+{% endblock %}

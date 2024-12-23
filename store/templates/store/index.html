@@ -8,11 +8,10 @@
 </head>
 <body class="bg-gray-100">
     <div class="min-h-screen flex items-center justify-center">
-
         <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
             <!-- Logo Section -->
             <div class="flex justify-center items-center mb-6 text-center">
-                <span class="text-xl font-bold text-indigo-600 block mb-0.1">AETHER STORE<br> 
+                <span class="text-xl font-bold text-indigo-600 block mb-0.1">AETHER STORE<br></span>
                 <span class="text-sm font-medium text-indigo-500 block mt-0.1">Multi Agent E-Commerce Platform</span>
             </div>            
 
@@ -25,17 +24,26 @@
             </div>
 
             <!-- Login Form -->
-            <form action="#" method="POST" class="mt-6">
+            <form action="" method="POST" class="mt-6">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" id="form_type" value="user">
+                
+                {% if error %}
+                <div class="text-red-500 text-sm mb-4 text-center">
+                    {{ error }}
+                </div>
+                {% endif %}
+                
                 <div id="userFields">
                     <label class="block text-sm font-medium text-gray-700">Username</label>
                     <div class="relative mt-2">
-                        <input type="name" name="name" placeholder="Enter your username"
+                        <input type="text" name="user_name" placeholder="Enter your username"
                             class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     
                     <label class="block text-sm font-medium text-gray-700 mt-4">Password</label>
                     <div class="relative mt-2">
-                        <input type="password" name="password" placeholder="Enter your password"
+                        <input type="password" name="user_password" placeholder="Enter your password"
                             class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                 </div>
@@ -43,14 +51,13 @@
                 <div id="adminFields" class="hidden">
                     <label class="block text-sm font-medium text-gray-700">Admin Name</label>
                     <div class="relative mt-2">
-                        <input type="name" name="name" placeholder="Enter your admin name"
+                        <input type="text" name="admin_name" placeholder="Enter your admin name"
                             class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                     
-
                     <label class="block text-sm font-medium text-gray-700 mt-4">Password</label>
                     <div class="relative mt-2">
-                        <input type="password" name="adminPassword" placeholder="Enter your password"
+                        <input type="password" name="admin_password" placeholder="Enter your password"
                             class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                     </div>                
                 </div>
@@ -70,6 +77,7 @@
         const adminBtn = document.getElementById("adminBtn");
         const userFields = document.getElementById("userFields");
         const adminFields = document.getElementById("adminFields");
+        const formType = document.getElementById("form_type");
 
         userBtn.addEventListener("click", () => {
             userBtn.classList.add("bg-indigo-600", "text-white");
@@ -78,6 +86,7 @@
 
             userFields.classList.remove("hidden");
             adminFields.classList.add("hidden");
+            formType.value = "user";
         });
 
         adminBtn.addEventListener("click", () => {
@@ -87,6 +96,7 @@
 
             adminFields.classList.remove("hidden");
             userFields.classList.add("hidden");
+            formType.value = "admin";
         });
     </script>
 </body>

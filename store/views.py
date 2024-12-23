@@ -249,3 +249,5 @@ class AdminView(BaseOntologyView):
 
         self.save_graph()
         return redirect('baseAdmin')
+
+

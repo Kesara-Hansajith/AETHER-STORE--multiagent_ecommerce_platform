@@ -1,4 +1,4 @@
-{% extends 'store/base.html' %}
+{% extends 'store/baseUser.html' %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-8">
@@ -7,7 +7,7 @@
         <span class="block sm:inline">Your order has been placed successfully.</span>
     </div>
     <div class="mt-4">
-        <a href="{% url 'product_list' %}" class="text-blue-500 hover:text-blue-700">← Back to Products</a>
+        <a href="{% url 'user_product_list' %}" class="text-blue-500 hover:text-blue-700">← Back to Products</a>
     </div>
 </div>
 {% endblock %}

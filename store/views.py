@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from django.views import View
 from rdflib import Graph, URIRef, Namespace, Literal
 from rdflib.namespace import RDF, XSD
+from django.contrib import messages
 import uuid
 import os
+
 
 class BaseOntologyView(View):
     def __init__(self):
@@ -18,11 +20,82 @@ class BaseOntologyView(View):
         ontology_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ontology', 'Ecommerce_Platform.xml')
         self.graph.serialize(destination=ontology_path, format="xml")
 
-class ProductView(BaseOntologyView):
+class LoginView(View):
+    def get(self, request):
+        """Display login form"""
+        return render(request, 'store/index.html')
+    
+    def post(self, request):
+        """Handle login form submission"""        # This line needs to be properly indented
+        form_type = request.POST.get('form_type', 'user')
+        
+        if form_type == 'user':
+            username = request.POST.get('user_name')
+            password = request.POST.get('user_password')
+            
+            print(f"Login attempt - Username: {username}, Password: {password}")
+            
+            if username == "JohnDoe" and password == "JohnDoe":
+                request.session['user_type'] = 'user'
+                request.session['username'] = username
+                return redirect('baseUser')
+            else:
+                messages.error(request, 'Invalid user credentials')
+                return render(request, 'store/index.html', {'error': 'Invalid user credentials'})
+        else:  # admin login
+            username = request.POST.get('admin_name')
+            password = request.POST.get('admin_password')
+            
+            if username == "Admin" and password == "Admin":
+                request.session['user_type'] = 'admin'
+                request.session['username'] = username
+                return redirect('baseAdmin')
+            else:
+                messages.error(request, 'Invalid admin credentials')
+                return render(request, 'store/index.html', {'error': 'Invalid admin credentials'})
+    
+class UserDashboardView(BaseOntologyView):
+    def get(self, request):
+        """Display user dashboard"""
+        if request.session.get('user_type') != 'user':
+            return redirect('login')
+        return render(request, 'store/baseUser.html')
+    
+class AdminDashboardView(BaseOntologyView):
+    def get(self, request):
+        """Display admin dashboard"""
+        if request.session.get('user_type') != 'admin':
+            return redirect('login')
+        return render(request, 'store/baseAdmin.html')
+
+class UserProductView(BaseOntologyView):
     def get(self, request):
         """Display list of products"""
         products = self.get_all_products()
-        return render(request, 'store/products.html', {'products': products})
+        return render(request, 'store/user/userproducts.html', {'userproducts': products})
+    
+    def get_all_products(self):
+        products = []
+        for product in self.graph.subjects(RDF.type, self.ECOM_NS.Product):
+            name = self.graph.value(product, self.ECOM_NS.name)
+            price = self.graph.value(product, self.ECOM_NS.price)
+            stock = self.graph.value(product, self.ECOM_NS.stockLevel)
+            discount = self.graph.value(product, self.ECOM_NS.discount, default=Literal(0.0))
+            
+            products.append({
+                'name': str(name),
+                'price': float(price),
+                'stock': int(stock),
+                'discount': float(discount),
+                'final_price': round(float(price) * (1 - float(discount)/100), 2)
+            })
+        return products
+
+class AdminProductView(BaseOntologyView):
+    def get(self, request):
+        """Display list of products"""
+        products = self.get_all_products()
+        return render(request, 'store/admin/adminproducts.html', {'adminproducts': products})
     
     def get_all_products(self):
         products = []
@@ -45,9 +118,9 @@ class OrderView(BaseOntologyView):
     def get(self, request):
         """Display order form"""
         # Create a new instance of ProductView to use its methods
-        product_view = ProductView()
+        product_view = UserProductView()
         products = product_view.get_all_products()
-        return render(request, 'store/order_form.html', {'products': products})
+        return render(request, 'store/user/order_form.html', {'products': products})
     
     def post(self, request):
         """Handle order placement"""
@@ -127,13 +200,13 @@ class ViewOrdersView(BaseOntologyView):
                 print(f"Error processing order {order}: {str(e)}")
                 continue
             
-        return render(request, 'store/orders.html', {'orders': orders})
+        return render(request, 'store/admin/orders.html', {'orders': orders})
 
 class AdminView(BaseOntologyView):
     def get(self, request):
         """Display admin dashboard"""
         # Create a new instance of ProductView to use its methods
-        product_view = ProductView()
+        product_view = AdminProductView()
         products = product_view.get_all_products()
         return render(request, 'store/admin/dashboard.html', {'products': products})
     
@@ -159,4 +232,4 @@ class AdminView(BaseOntologyView):
         self.graph.add((product, self.ECOM_NS.discount, Literal(discount, datatype=XSD.float)))
         
         self.save_graph()
-        return redirect('admin_dashboard')
+        return redirect('baseAdmin')

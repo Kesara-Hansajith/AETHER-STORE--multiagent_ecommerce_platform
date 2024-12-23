@@ -3,6 +3,7 @@ from django.views import View
 from rdflib import Graph, URIRef, Namespace, Literal
 from rdflib.namespace import RDF, XSD
 from django.contrib import messages
+from django.conf import settings
 import uuid
 import os
 
@@ -26,7 +27,7 @@ class LoginView(View):
         return render(request, 'store/index.html')
     
     def post(self, request):
-        """Handle login form submission"""        # This line needs to be properly indented
+        """Handle login form submission"""        
         form_type = request.POST.get('form_type', 'user')
         
         if form_type == 'user':
@@ -72,7 +73,10 @@ class UserProductView(BaseOntologyView):
     def get(self, request):
         """Display list of products"""
         products = self.get_all_products()
-        return render(request, 'store/user/userproducts.html', {'userproducts': products})
+        return render(request, 'store/user/userproducts.html', {
+            'userproducts': products,
+            'MEDIA_URL': settings.MEDIA_URL
+        })
     
     def get_all_products(self):
         products = []
@@ -81,13 +85,15 @@ class UserProductView(BaseOntologyView):
             price = self.graph.value(product, self.ECOM_NS.price)
             stock = self.graph.value(product, self.ECOM_NS.stockLevel)
             discount = self.graph.value(product, self.ECOM_NS.discount, default=Literal(0.0))
+            image = self.graph.value(product, self.ECOM_NS.hasImage, default=Literal("default_image.jpg"))
             
             products.append({
                 'name': str(name),
                 'price': float(price),
                 'stock': int(stock),
                 'discount': float(discount),
-                'final_price': round(float(price) * (1 - float(discount)/100), 2)
+                'final_price': round(float(price) * (1 - float(discount)/100), 2),
+                'image': str(image),  
             })
         return products
 
@@ -95,7 +101,10 @@ class AdminProductView(BaseOntologyView):
     def get(self, request):
         """Display list of products"""
         products = self.get_all_products()
-        return render(request, 'store/admin/adminproducts.html', {'adminproducts': products})
+        return render(request, 'store/admin/adminproducts.html', {
+            'adminproducts': products,
+            'MEDIA_URL': settings.MEDIA_URL  
+        })
     
     def get_all_products(self):
         products = []
@@ -104,13 +113,15 @@ class AdminProductView(BaseOntologyView):
             price = self.graph.value(product, self.ECOM_NS.price)
             stock = self.graph.value(product, self.ECOM_NS.stockLevel)
             discount = self.graph.value(product, self.ECOM_NS.discount, default=Literal(0.0))
+            image = self.graph.value(product, self.ECOM_NS.hasImage, default=Literal("default_image.jpg"))
             
             products.append({
                 'name': str(name),
                 'price': float(price),
                 'stock': int(stock),
                 'discount': float(discount),
-                'final_price': round(float(price) * (1 - float(discount)/100), 2)
+                'final_price': round(float(price) * (1 - float(discount)/100), 2),
+                'image': str(image),  
             })
         return products
 
@@ -209,27 +220,32 @@ class AdminView(BaseOntologyView):
         product_view = AdminProductView()
         products = product_view.get_all_products()
         return render(request, 'store/admin/dashboard.html', {'products': products})
-    
+
     def post(self, request):
         """Handle adding new product"""
         product_name = request.POST.get('name')
         price = float(request.POST.get('price', 0))
         stock_level = int(request.POST.get('stock_level', 0))
         discount = float(request.POST.get('discount', 0))
-        
-        if not product_name or price <= 0:
-            return render(request, 'store/error.html', 
-                        {'message': 'Invalid product details'})
-        
+        image = request.FILES.get('image')
+
+        # Save the uploaded image to the media directory
+        if image:
+            image_path = os.path.join('product_images', image.name)
+            with open(os.path.join(settings.MEDIA_ROOT, image_path), 'wb+') as f:
+                for chunk in image.chunks():
+                    f.write(chunk)
+
         product_id = product_name.lower().replace(" ", "_")
         product = URIRef(self.ECOM_NS + product_id)
-        
+
         # Add product to graph
         self.graph.add((product, RDF.type, self.ECOM_NS.Product))
         self.graph.add((product, self.ECOM_NS.name, Literal(product_name, datatype=XSD.string)))
         self.graph.add((product, self.ECOM_NS.price, Literal(price, datatype=XSD.float)))
         self.graph.add((product, self.ECOM_NS.stockLevel, Literal(stock_level, datatype=XSD.integer)))
         self.graph.add((product, self.ECOM_NS.discount, Literal(discount, datatype=XSD.float)))
-        
+        self.graph.add((product, self.ECOM_NS.hasImage, Literal(image_path, datatype=XSD.string)))
+
         self.save_graph()
         return redirect('baseAdmin')

@@ -218,13 +218,97 @@ class UserProductView(LoginRequiredMixin, ProductView):
 
 class AdminProductView(LoginRequiredMixin, ProductView):
     """Admin product management view"""
-    def get(self, request):
+    def get(self, request, product_id=None):
         if request.session.get('user_type') != 'admin':
             raise PermissionDenied
+        
+        if product_id:
+            # Find the specific product for updating
+            product = None
+            for p in self.graph.subjects(RDF.type, self.ECOM_NS.Product):
+                if str(p).split('#')[-1] == product_id:
+                    product = {
+                        'id': product_id,
+                        'name': str(self.graph.value(p, self.ECOM_NS.name)),
+                        'price': float(self.graph.value(p, self.ECOM_NS.price)),
+                        'stock': int(self.graph.value(p, self.ECOM_NS.stockLevel)),
+                        'discount': float(self.graph.value(p, self.ECOM_NS.discount, default=Literal(0.0))),
+                        'image': str(self.graph.value(p, self.ECOM_NS.hasImage, default=Literal("default_image.jpg")))
+                    }
+                    break
+            
+            if not product:
+                messages.error(request, 'Product not found')
+                return redirect('admin_product_list')
+                
+            return render(request, 'store/admin/update_product.html', {'product': product})
+        
         return render(request, 'store/admin/adminproducts.html', {
             'adminproducts': self.get_all_products(),
             'MEDIA_URL': settings.MEDIA_URL
         })
+
+    def post(self, request, product_id=None):
+        if request.session.get('user_type') != 'admin':
+            raise PermissionDenied
+
+        action = request.POST.get('action')
+        
+        try:
+            # Find the product in the graph
+            product = None
+            for p in self.graph.subjects(RDF.type, self.ECOM_NS.Product):
+                if str(p).split('#')[-1] == product_id:
+                    product = p
+                    break
+            
+            if not product:
+                messages.error(request, 'Product not found')
+                return redirect('admin_product_list')
+
+            if action == 'delete':
+                # Remove all triples about this product
+                for p, o in self.graph.predicate_objects(product):
+                    self.graph.remove((product, p, o))
+                messages.success(request, 'Product deleted successfully')
+                
+            elif action == 'update':
+                # Update product properties
+                updates = [
+                    (self.ECOM_NS.price, Literal(float(request.POST.get('price', 0)), datatype=XSD.float)),
+                    (self.ECOM_NS.stockLevel, Literal(int(request.POST.get('stock_level', 0)), datatype=XSD.integer)),
+                    (self.ECOM_NS.discount, Literal(float(request.POST.get('discount', 0)), datatype=XSD.float))
+                ]
+
+                # Handle image update if provided
+                if request.FILES.get('image'):
+                    image = request.FILES['image']
+                    image_path = os.path.join('product_images', image.name)
+                    os.makedirs(os.path.dirname(os.path.join(settings.MEDIA_ROOT, image_path)), exist_ok=True)
+                    
+                    with open(os.path.join(settings.MEDIA_ROOT, image_path), 'wb+') as f:
+                        for chunk in image.chunks():
+                            f.write(chunk)
+                            
+                    updates.append((self.ECOM_NS.hasImage, Literal(image_path, datatype=XSD.string)))
+
+                # Update the graph
+                for predicate, new_value in updates:
+                    # Remove old value if it exists
+                    old_value = self.graph.value(product, predicate)
+                    if old_value:
+                        self.graph.remove((product, predicate, old_value))
+                    # Add new value
+                    self.graph.add((product, predicate, new_value))
+
+                messages.success(request, 'Product updated successfully')
+
+            self.save_graph()
+            return redirect('admin_product_list')
+            
+        except Exception as e:
+            messages.error(request, f'Error processing product: {str(e)}')
+            return redirect('admin_product_list')
 
 class OrderView(LoginRequiredMixin, BaseOntologyView):
     """Handle order creation and management"""

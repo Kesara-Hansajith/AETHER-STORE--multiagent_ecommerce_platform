@@ -1,6 +1,6 @@
 {% extends "store/baseAdmin.html" %}
 {% block content %}
-<<<<<<< HEAD
+
 
 <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
     <h2 class="text-2xl font-bold mb-6">Update Product</h2>
@@ -13,16 +13,14 @@
             {{ message }}
         </div>
         {% endfor %}
-=======
+
 <div class="bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-10 p-8">
     <div>
         <h3 class="text-2xl font-semibold text-gray-800">Update Product</h3>
         <p class="text-sm text-gray-600 mt-2">Modify product details or remove from inventory</p>
->>>>>>> a9c35c315cd760d94ebb745418fe38e481df0b86
     </div>
     {% endif %}
 
-<<<<<<< HEAD
     <form method="POST" enctype="multipart/form-data" class="space-y-6">
         {% csrf_token %}
         <input type="hidden" name="action" value="update">
@@ -107,7 +105,7 @@
             Delete Product
         </button>
     </form>
-=======
+
     <div class="mt-8 border-t border-gray-200 pt-6">
         <form method="POST" enctype="multipart/form-data" class="space-y-2">
             {% csrf_token %}
@@ -174,7 +172,7 @@
             </div>
         </form>
     </div>
->>>>>>> a9c35c315cd760d94ebb745418fe38e481df0b86
+
 </div>
 
 {% endblock %}

@@ -1,251 +1,378 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from rdflib import Graph, URIRef, Namespace, Literal
-from rdflib.namespace import RDF, XSD
 from django.contrib import messages
 from django.conf import settings
+from .models import Feedback
+from django.contrib.auth import login, logout
+from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
+from rdflib import Graph, URIRef, Namespace, Literal
+from rdflib.namespace import RDF, XSD
+from django.core.paginator import Paginator
 import uuid
 import os
-
+from datetime import datetime
 
 class BaseOntologyView(View):
+    """Base view for handling RDF graph operations"""
     def __init__(self):
         super().__init__()
         self.graph = Graph()
-        # Use os.path to handle file paths properly
-        ontology_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ontology', 'Ecommerce_Platform.xml')
-        self.graph.parse(ontology_path)
+        self.ontology_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 
+                                         'ontology', 'Ecommerce_Platform.xml')
+        try:
+            self.graph.parse(self.ontology_path)
+        except Exception as e:
+            print(f"Error loading ontology: {e}")
+            # Initialize empty graph if file doesn't exist
+            pass
         self.ECOM_NS = Namespace("http://www.example.org/ecommerce_ontology#")
-        
+    
     def save_graph(self):
-        ontology_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'ontology', 'Ecommerce_Platform.xml')
-        self.graph.serialize(destination=ontology_path, format="xml")
+        """Safely save the RDF graph to file"""
+        try:
+            self.graph.serialize(destination=self.ontology_path, format="xml")
+        except Exception as e:
+            print(f"Error saving ontology: {e}")
+            raise
 
 class LoginView(View):
+    """Handle user and admin authentication"""
     def get(self, request):
-        """Display login form"""
+        # Clear any existing session and logout
+        logout(request)
+        request.session.flush()
+        
         return render(request, 'store/index.html')
     
     def post(self, request):
-        """Handle login form submission"""        
         form_type = request.POST.get('form_type', 'user')
+        username = request.POST.get(f'{form_type}_name')
+        password = request.POST.get(f'{form_type}_password')
         
-        if form_type == 'user':
-            username = request.POST.get('user_name')
-            password = request.POST.get('user_password')
+        # In production, replace with proper authentication
+        credentials = {
+            'user': {'username': 'JohnDoe', 'password': 'JohnDoe'},
+            'admin': {'username': 'Admin', 'password': 'Admin'}
+        }
+        
+        if (username == credentials[form_type]['username'] and 
+            password == credentials[form_type]['password']):
+            # Clear any existing session first
+            request.session.flush()
             
-            print(f"Login attempt - Username: {username}, Password: {password}")
+            # Set session data
+            request.session['user_type'] = form_type
+            request.session['username'] = username
             
-            if username == "JohnDoe" and password == "JohnDoe":
-                request.session['user_type'] = 'user'
-                request.session['username'] = username
-                return redirect('baseUser')
-            else:
-                messages.error(request, 'Invalid user credentials')
-                return render(request, 'store/index.html', {'error': 'Invalid user credentials'})
-        else:  # admin login
-            username = request.POST.get('admin_name')
-            password = request.POST.get('admin_password')
+            # Handle Django authentication
+            from django.contrib.auth.models import User
+            user, created = User.objects.get_or_create(username=username)
+            login(request, user)
             
-            if username == "Admin" and password == "Admin":
-                request.session['user_type'] = 'admin'
-                request.session['username'] = username
-                return redirect('baseAdmin')
-            else:
-                messages.error(request, 'Invalid admin credentials')
-                return render(request, 'store/index.html', {'error': 'Invalid admin credentials'})
-    
-class UserDashboardView(BaseOntologyView):
+            return redirect('baseUser' if form_type == 'user' else 'baseAdmin')
+        
+        messages.error(request, f'Invalid {form_type} credentials')
+        return render(request, 'store/index.html', {'error': f'Invalid {form_type} credentials'})
+
+class AddFeedbackView(LoginRequiredMixin, View):
+    """Handle user feedback submission"""
     def get(self, request):
-        """Display user dashboard"""
         if request.session.get('user_type') != 'user':
-            return redirect('login')
-        return render(request, 'store/baseUser.html')
+            raise PermissionDenied
+            
+        context = {
+            'range': range(5),  # For star rating display
+        }
+        return render(request, 'store/user/add_feedback.html', context)
     
-class AdminDashboardView(BaseOntologyView):
+    def post(self, request):
+        try:
+            # Validate user session
+            if request.session.get('user_type') != 'user':
+                raise PermissionDenied
+                
+            # Get form data
+            name = request.POST.get('name')
+            email = request.POST.get('email')
+            rating = request.POST.get('rating')
+            feedback_text = request.POST.get('feedback')
+            
+            # Validate required fields
+            if not all([name, email, rating, feedback_text]):
+                messages.error(request, 'All fields are required')
+                return redirect('add_feedback')
+                
+            # Validate rating
+            try:
+                rating = int(rating)
+                if not 1 <= rating <= 5:
+                    raise ValueError
+            except (TypeError, ValueError):
+                messages.error(request, 'Invalid rating value')
+                return redirect('add_feedback')
+                
+            # Create feedback
+            feedback = Feedback.objects.create(
+                user=name,
+                rating=rating,
+                comment=feedback_text
+            )
+            
+            messages.success(request, 'Thank you for your feedback!')
+            return redirect('user_product_list')  # Redirect to products page after submission
+            
+        except Exception as e:
+            messages.error(request, f'Error submitting feedback: {str(e)}')
+            return redirect('add_feedback')
+
+
+class FeedbackView(LoginRequiredMixin, BaseOntologyView):
+    """View for handling feedback display and management"""
     def get(self, request):
-        """Display admin dashboard"""
         if request.session.get('user_type') != 'admin':
-            return redirect('login')
+            raise PermissionDenied
+            
+        # Get all feedback ordered by creation date
+        feedback_list = Feedback.objects.all().order_by('-created_at')
+        
+        # Paginate the feedback list - 10 items per page
+        paginator = Paginator(feedback_list, 10)
+        page = request.GET.get('page')
+        feedbacks = paginator.get_page(page)
+        
+        context = {
+            'feedbacks': feedbacks,
+            'star_range': range(5)
+        }
+        return render(request, 'store/admin/feedbacks.html', context)
+    
+    def post(self, request):
+        """Handle feedback deletion"""
+        if request.session.get('user_type') != 'admin':
+            raise PermissionDenied
+            
+        feedback_id = request.POST.get('feedback_id')
+        try:
+            feedback = get_object_or_404(Feedback, id=feedback_id)
+            feedback.delete()
+            messages.success(request, 'Feedback deleted successfully')
+        except Exception as e:
+            messages.error(request, f'Error deleting feedback: {str(e)}')
+            
+        return redirect('view_feedbacks')
+
+class UserDashboardView(LoginRequiredMixin, BaseOntologyView):
+    """User dashboard view"""
+    def get(self, request):
+        if request.session.get('user_type') != 'user':
+            raise PermissionDenied
+        
+        context = {
+            'username': request.session.get('username'),
+            'last_login': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        return render(request, 'store/baseUser.html', context)
+
+class AdminDashboardView(LoginRequiredMixin, BaseOntologyView):
+    """Admin dashboard view"""
+    def get(self, request):
+        if request.session.get('user_type') != 'admin':
+            raise PermissionDenied
         return render(request, 'store/baseAdmin.html')
 
-class UserProductView(BaseOntologyView):
+class ProductView(BaseOntologyView):
+    """Base class for product views"""
+    def get_all_products(self):
+        products = []
+        for product in self.graph.subjects(RDF.type, self.ECOM_NS.Product):
+            try:
+                product_data = {
+                    'name': str(self.graph.value(product, self.ECOM_NS.name)),
+                    'price': float(self.graph.value(product, self.ECOM_NS.price)),
+                    'stock': int(self.graph.value(product, self.ECOM_NS.stockLevel)),
+                    'discount': float(self.graph.value(product, self.ECOM_NS.discount, 
+                                                     default=Literal(0.0))),
+                    'image': str(self.graph.value(product, self.ECOM_NS.hasImage, 
+                                                default=Literal("default_image.jpg")))
+                }
+                product_data['final_price'] = round(
+                    product_data['price'] * (1 - product_data['discount']/100), 2
+                )
+                products.append(product_data)
+            except Exception as e:
+                print(f"Error processing product {product}: {e}")
+                continue
+        return products
+
+class UserProductView(LoginRequiredMixin, ProductView):
+    """User product listing view"""
     def get(self, request):
-        """Display list of products"""
-        products = self.get_all_products()
+        if request.session.get('user_type') != 'user':
+            raise PermissionDenied
         return render(request, 'store/user/userproducts.html', {
-            'userproducts': products,
+            'userproducts': self.get_all_products(),
             'MEDIA_URL': settings.MEDIA_URL
         })
-    
-    def get_all_products(self):
-        products = []
-        for product in self.graph.subjects(RDF.type, self.ECOM_NS.Product):
-            name = self.graph.value(product, self.ECOM_NS.name)
-            price = self.graph.value(product, self.ECOM_NS.price)
-            stock = self.graph.value(product, self.ECOM_NS.stockLevel)
-            discount = self.graph.value(product, self.ECOM_NS.discount, default=Literal(0.0))
-            image = self.graph.value(product, self.ECOM_NS.hasImage, default=Literal("default_image.jpg"))
-            
-            products.append({
-                'name': str(name),
-                'price': float(price),
-                'stock': int(stock),
-                'discount': float(discount),
-                'final_price': round(float(price) * (1 - float(discount)/100), 2),
-                'image': str(image),  
-            })
-        return products
 
-class AdminProductView(BaseOntologyView):
+class AdminProductView(LoginRequiredMixin, ProductView):
+    """Admin product management view"""
     def get(self, request):
-        """Display list of products"""
-        products = self.get_all_products()
+        if request.session.get('user_type') != 'admin':
+            raise PermissionDenied
         return render(request, 'store/admin/adminproducts.html', {
-            'adminproducts': products,
-            'MEDIA_URL': settings.MEDIA_URL  
+            'adminproducts': self.get_all_products(),
+            'MEDIA_URL': settings.MEDIA_URL
         })
-    
-    def get_all_products(self):
-        products = []
-        for product in self.graph.subjects(RDF.type, self.ECOM_NS.Product):
-            name = self.graph.value(product, self.ECOM_NS.name)
-            price = self.graph.value(product, self.ECOM_NS.price)
-            stock = self.graph.value(product, self.ECOM_NS.stockLevel)
-            discount = self.graph.value(product, self.ECOM_NS.discount, default=Literal(0.0))
-            image = self.graph.value(product, self.ECOM_NS.hasImage, default=Literal("default_image.jpg"))
-            
-            products.append({
-                'name': str(name),
-                'price': float(price),
-                'stock': int(stock),
-                'discount': float(discount),
-                'final_price': round(float(price) * (1 - float(discount)/100), 2),
-                'image': str(image),  
-            })
-        return products
 
-class OrderView(BaseOntologyView):
+class OrderView(LoginRequiredMixin, BaseOntologyView):
+    """Handle order creation and management"""
     def get(self, request):
-        """Display order form"""
-        # Create a new instance of ProductView to use its methods
-        product_view = UserProductView()
-        products = product_view.get_all_products()
+        if request.session.get('user_type') != 'user':
+            raise PermissionDenied
+        products = UserProductView().get_all_products()
         return render(request, 'store/user/order_form.html', {'products': products})
     
     def post(self, request):
-        """Handle order placement"""
-        product_name = request.POST.get('product_name')
-        quantity = int(request.POST.get('quantity', 0))
-        
-        # Find product in RDF graph
-        product = next(
-            (p for p in self.graph.subjects(self.ECOM_NS.name, 
-            Literal(product_name, datatype=XSD.string))), None
-        )
-        
-        if not product:
-            return render(request, 'store/error.html', 
-                        {'message': 'Product not found'})
-        
-        stock = int(self.graph.value(product, self.ECOM_NS.stockLevel))
-        if stock < quantity:
-            return render(request, 'store/error.html', 
-                        {'message': f'Insufficient stock. Only {stock} available'})
-        
-        # Create order
-        order_id = str(uuid.uuid4())
-        order = URIRef(self.ECOM_NS + order_id)
-        
-        self.graph.add((order, RDF.type, self.ECOM_NS.Order))
-        self.graph.add((order, self.ECOM_NS.customer, Literal("John Doe", datatype=XSD.string)))
-        self.graph.add((order, self.ECOM_NS.product, product))
-        self.graph.add((order, self.ECOM_NS.quantity, Literal(quantity, datatype=XSD.integer)))
-        self.graph.add((order, self.ECOM_NS.status, Literal("pending", datatype=XSD.string)))
-        
-        # Update stock
-        self.graph.set((product, self.ECOM_NS.stockLevel, Literal(stock - quantity)))
-        
-        self.save_graph()
-        return redirect('order_success')
-    
-# views.py
-class ViewOrdersView(BaseOntologyView):
+        try:
+            product_name = request.POST.get('product_name')
+            quantity = int(request.POST.get('quantity', 0))
+            
+            # Validate input
+            if quantity <= 0:
+                messages.error(request, 'Quantity must be greater than 0')
+                return redirect('order')
+            
+            # Find product
+            product = next(
+                (p for p in self.graph.subjects(self.ECOM_NS.name, 
+                Literal(product_name, datatype=XSD.string))), None
+            )
+            
+            if not product:
+                messages.error(request, 'Product not found')
+                return redirect('order')
+            
+            # Check stock
+            stock = int(self.graph.value(product, self.ECOM_NS.stockLevel))
+            if stock < quantity:
+                messages.error(request, f'Insufficient stock. Only {stock} available')
+                return redirect('order')
+            
+            # Create order
+            order_id = str(uuid.uuid4())
+            order = URIRef(self.ECOM_NS + order_id)
+            
+            # Add order details
+            order_data = [
+                (RDF.type, self.ECOM_NS.Order),
+                (self.ECOM_NS.customer, Literal(request.session.get('username', 'Unknown'), 
+                                              datatype=XSD.string)),
+                (self.ECOM_NS.product, product),
+                (self.ECOM_NS.quantity, Literal(quantity, datatype=XSD.integer)),
+                (self.ECOM_NS.status, Literal("pending", datatype=XSD.string)),
+                (self.ECOM_NS.orderDate, Literal(datetime.now().isoformat(), 
+                                               datatype=XSD.dateTime))
+            ]
+            
+            for predicate, obj in order_data:
+                self.graph.add((order, predicate, obj))
+            
+            # Update stock
+            self.graph.set((product, self.ECOM_NS.stockLevel, Literal(stock - quantity)))
+            
+            self.save_graph()
+            messages.success(request, 'Order placed successfully!')
+            return redirect('order_success')
+            
+        except Exception as e:
+            messages.error(request, f'Error processing order: {str(e)}')
+            return redirect('order')
+
+class ViewOrdersView(LoginRequiredMixin, BaseOntologyView):
+    """View and manage orders"""
     def get(self, request):
-        """Display all orders"""
+        if request.session.get('user_type') != 'admin':
+            raise PermissionDenied
+            
         orders = []
         for order in self.graph.subjects(RDF.type, self.ECOM_NS.Order):
             try:
-                # Get all values with safe fallbacks
-                customer = str(self.graph.value(order, self.ECOM_NS.customer) or "Unknown")
-                product = self.graph.value(order, self.ECOM_NS.product)
-                
-                # Handle case where product might not exist
-                if product:
-                    product_name = str(self.graph.value(product, self.ECOM_NS.name) or "Unknown Product")
-                else:
-                    product_name = "Unknown Product"
-                
-                # Handle missing quantity with safe conversion
-                quantity_value = self.graph.value(order, self.ECOM_NS.quantity)
-                quantity = int(quantity_value) if quantity_value is not None else 0
-                
-                # Handle missing status
-                status = str(self.graph.value(order, self.ECOM_NS.status) or "unknown")
-                
-                # Extract order ID from URI, with fallback
-                try:
-                    order_id = str(order).split('#')[-1]
-                except:
-                    order_id = "unknown"
-                
-                orders.append({
-                    'id': order_id,
-                    'customer': customer,
-                    'product': product_name,
-                    'quantity': quantity,
-                    'status': status
-                })
+                order_data = {
+                    'id': str(order).split('#')[-1],
+                    'customer': str(self.graph.value(order, self.ECOM_NS.customer) or "Unknown"),
+                    'product': str(self.graph.value(self.graph.value(order, self.ECOM_NS.product), 
+                                                  self.ECOM_NS.name) or "Unknown Product"),
+                    'quantity': int(self.graph.value(order, self.ECOM_NS.quantity) or 0),
+                    'status': str(self.graph.value(order, self.ECOM_NS.status) or "unknown"),
+                    'date': self.graph.value(order, self.ECOM_NS.orderDate)
+                }
+                orders.append(order_data)
             except Exception as e:
-                # Log the error but continue processing other orders
                 print(f"Error processing order {order}: {str(e)}")
                 continue
             
         return render(request, 'store/admin/orders.html', {'orders': orders})
 
-class AdminView(BaseOntologyView):
+class AdminView(LoginRequiredMixin, BaseOntologyView):
+    """Admin dashboard and product management"""
     def get(self, request):
-        """Display admin dashboard"""
-        # Create a new instance of ProductView to use its methods
-        product_view = AdminProductView()
-        products = product_view.get_all_products()
+        if request.session.get('user_type') != 'admin':
+            raise PermissionDenied
+            
+        products = AdminProductView().get_all_products()
         return render(request, 'store/admin/dashboard.html', {'products': products})
 
     def post(self, request):
-        """Handle adding new product"""
-        product_name = request.POST.get('name')
-        price = float(request.POST.get('price', 0))
-        stock_level = int(request.POST.get('stock_level', 0))
-        discount = float(request.POST.get('discount', 0))
-        image = request.FILES.get('image')
+        try:
+            # Validate input
+            product_name = request.POST.get('name')
+            if not product_name:
+                messages.error(request, 'Product name is required')
+                return redirect('baseAdmin')
+                
+            # Process product data
+            product_data = {
+                'price': float(request.POST.get('price', 0)),
+                'stock_level': int(request.POST.get('stock_level', 0)),
+                'discount': float(request.POST.get('discount', 0)),
+            }
+            
+            # Handle image upload
+            image = request.FILES.get('image')
+            if image:
+                image_path = os.path.join('product_images', image.name)
+                os.makedirs(os.path.dirname(os.path.join(settings.MEDIA_ROOT, image_path)), 
+                           exist_ok=True)
+                with open(os.path.join(settings.MEDIA_ROOT, image_path), 'wb+') as f:
+                    for chunk in image.chunks():
+                        f.write(chunk)
+            else:
+                image_path = 'default_image.jpg'
 
-        # Save the uploaded image to the media directory
-        if image:
-            image_path = os.path.join('product_images', image.name)
-            with open(os.path.join(settings.MEDIA_ROOT, image_path), 'wb+') as f:
-                for chunk in image.chunks():
-                    f.write(chunk)
+            # Create product in RDF graph
+            product_id = product_name.lower().replace(" ", "_")
+            product = URIRef(self.ECOM_NS + product_id)
 
-        product_id = product_name.lower().replace(" ", "_")
-        product = URIRef(self.ECOM_NS + product_id)
+            # Add product properties
+            product_properties = [
+                (RDF.type, self.ECOM_NS.Product),
+                (self.ECOM_NS.name, Literal(product_name, datatype=XSD.string)),
+                (self.ECOM_NS.price, Literal(product_data['price'], datatype=XSD.float)),
+                (self.ECOM_NS.stockLevel, Literal(product_data['stock_level'], 
+                                                datatype=XSD.integer)),
+                (self.ECOM_NS.discount, Literal(product_data['discount'], datatype=XSD.float)),
+                (self.ECOM_NS.hasImage, Literal(image_path, datatype=XSD.string))
+            ]
 
-        # Add product to graph
-        self.graph.add((product, RDF.type, self.ECOM_NS.Product))
-        self.graph.add((product, self.ECOM_NS.name, Literal(product_name, datatype=XSD.string)))
-        self.graph.add((product, self.ECOM_NS.price, Literal(price, datatype=XSD.float)))
-        self.graph.add((product, self.ECOM_NS.stockLevel, Literal(stock_level, datatype=XSD.integer)))
-        self.graph.add((product, self.ECOM_NS.discount, Literal(discount, datatype=XSD.float)))
-        self.graph.add((product, self.ECOM_NS.hasImage, Literal(image_path, datatype=XSD.string)))
+            for predicate, obj in product_properties:
+                self.graph.add((product, predicate, obj))
 
-        self.save_graph()
-        return redirect('baseAdmin')
+            self.save_graph()
+            messages.success(request, 'Product added successfully!')
+            return redirect('baseAdmin')
+            
+        except Exception as e:
+            messages.error(request, f'Error adding product: {str(e)}')
+            return redirect('baseAdmin')

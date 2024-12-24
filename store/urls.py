@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     UserProductView, AdminProductView, OrderView, AdminView, ViewOrdersView,
-    LoginView, UserDashboardView
+    LoginView, UserDashboardView, FeedbackView, AddFeedbackView  # Remove view_feedbacks import
 )
 from django.shortcuts import render
 
@@ -14,4 +14,7 @@ urlpatterns = [
     path('baseAdmin/', AdminView.as_view(), name='baseAdmin'),
     path('orders/', ViewOrdersView.as_view(), name='view_orders'),
     path('success/', lambda request: render(request, 'store/user/success.html'), name='order_success'),
+    path('feedbacks/', FeedbackView.as_view(), name='view_feedbacks'),
+    path('feedbacks/delete/<int:pk>/', FeedbackView.as_view(), name='delete_feedback'),
+    path('feedback/add/', AddFeedbackView.as_view(), name='add_feedback'),
 ]

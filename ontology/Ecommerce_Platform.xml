@@ -1,377 +1,202 @@
-<?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.example.org/ecommerce_ontology#"
-     xml:base="http://www.example.org/ecommerce_ontology"
-     xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-    <owl:Ontology rdf:about="http://www.example.org/ecommerce_ontology"/>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Object Properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#assignsTask -->
-
-    <owl:ObjectProperty rdf:about="http://www.example.org/ecommerce_ontology#assignsTask">
-        <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#CentralCoordinationAgent"/>
-        <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#contains -->
-
-    <owl:ObjectProperty rdf:about="http://www.example.org/ecommerce_ontology#contains">
-        <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Order"/>
-        <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#hasResponsibility -->
-
-    <owl:ObjectProperty rdf:about="http://www.example.org/ecommerce_ontology#hasResponsibility">
-        <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
-        <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#managesInventory -->
-
-    <owl:ObjectProperty rdf:about="http://www.example.org/ecommerce_ontology#managesInventory">
-        <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#InventoryManagementAgent"/>
-        <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#places -->
-
-    <owl:ObjectProperty rdf:about="http://www.example.org/ecommerce_ontology#places">
-        <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Customer"/>
-        <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Order"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#providesFeedback -->
-
-    <owl:ObjectProperty rdf:about="http://www.example.org/ecommerce_ontology#providesFeedback">
-        <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Customer"/>
-        <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Feedback"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Data properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#name -->
-
-    <owl:DatatypeProperty rdf:about="http://www.example.org/ecommerce_ontology#name">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Customer"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#price -->
-
-    <owl:DatatypeProperty rdf:about="http://www.example.org/ecommerce_ontology#price">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#rating -->
-
-    <owl:DatatypeProperty rdf:about="http://www.example.org/ecommerce_ontology#rating">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Feedback"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#responsibilityDescription -->
-
-    <owl:DatatypeProperty rdf:about="http://www.example.org/ecommerce_ontology#responsibilityDescription">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#stockLevel -->
-
-    <owl:DatatypeProperty rdf:about="http://www.example.org/ecommerce_ontology#stockLevel">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Classes
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#Agent -->
-
-    <owl:Class rdf:about="http://www.example.org/ecommerce_ontology#Agent"/>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#CentralCoordinationAgent -->
-
-    <owl:Class rdf:about="http://www.example.org/ecommerce_ontology#CentralCoordinationAgent">
-        <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#Customer -->
-
-    <owl:Class rdf:about="http://www.example.org/ecommerce_ontology#Customer"/>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#CustomerAgent -->
-
-    <owl:Class rdf:about="http://www.example.org/ecommerce_ontology#CustomerAgent">
-        <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#Feedback -->
-
-    <owl:Class rdf:about="http://www.example.org/ecommerce_ontology#Feedback"/>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#FeedbackManagementAgent -->
-
-    <owl:Class rdf:about="http://www.example.org/ecommerce_ontology#FeedbackManagementAgent">
-        <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#InventoryManagementAgent -->
-
-    <owl:Class rdf:about="http://www.example.org/ecommerce_ontology#InventoryManagementAgent">
-        <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#Order -->
-
-    <owl:Class rdf:about="http://www.example.org/ecommerce_ontology#Order"/>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#Product -->
-
-    <owl:Class rdf:about="http://www.example.org/ecommerce_ontology#Product"/>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#PromotionAgent -->
-
-    <owl:Class rdf:about="http://www.example.org/ecommerce_ontology#PromotionAgent">
-        <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#RecommendationAgent -->
-
-    <owl:Class rdf:about="http://www.example.org/ecommerce_ontology#RecommendationAgent">
-        <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#Task -->
-
-    <owl:Class rdf:about="http://www.example.org/ecommerce_ontology#Task"/>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Individuals
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#CentralCoordinationAgent1 -->
-
-    <owl:NamedIndividual rdf:about="http://www.example.org/ecommerce_ontology#CentralCoordinationAgent1">
-        <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#CentralCoordinationAgent"/>
-        <assignsTask rdf:resource="http://www.example.org/ecommerce_ontology#CustomerAgent1"/>
-        <assignsTask rdf:resource="http://www.example.org/ecommerce_ontology#PromotionAgent1"/>
-        <assignsTask rdf:resource="http://www.example.org/ecommerce_ontology#RecommendationAgent1"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#CollectFeedback -->
-
-    <owl:NamedIndividual rdf:about="http://www.example.org/ecommerce_ontology#CollectFeedback">
-        <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
-        <responsibilityDescription>Collect and analyze customer feedback.</responsibilityDescription>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#CustomerAgent1 -->
-
-    <owl:NamedIndividual rdf:about="http://www.example.org/ecommerce_ontology#CustomerAgent1">
-        <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#CustomerAgent"/>
-        <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#ManageCustomerQueries"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#FeedbackManagementAgent1 -->
-
-    <owl:NamedIndividual rdf:about="http://www.example.org/ecommerce_ontology#FeedbackManagementAgent1">
-        <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#FeedbackManagementAgent"/>
-        <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#CollectFeedback"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#InventoryManagementAgent1 -->
-
-    <owl:NamedIndividual rdf:about="http://www.example.org/ecommerce_ontology#InventoryManagementAgent1">
-        <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#InventoryManagementAgent"/>
-        <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#UpdateInventory"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#JohnDoe -->
-
-    <owl:NamedIndividual rdf:about="http://www.example.org/ecommerce_ontology#JohnDoe">
-        <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Customer"/>
-        <name>John Doe</name>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#ManageCustomerQueries -->
-
-    <owl:NamedIndividual rdf:about="http://www.example.org/ecommerce_ontology#ManageCustomerQueries">
-        <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
-        <responsibilityDescription>Handle customer inquiries and complaints.</responsibilityDescription>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#ManagePromotions -->
-
-    <owl:NamedIndividual rdf:about="http://www.example.org/ecommerce_ontology#ManagePromotions">
-        <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
-        <responsibilityDescription>Launch and manage promotional campaigns.</responsibilityDescription>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#Order1 -->
-
-    <owl:NamedIndividual rdf:about="http://www.example.org/ecommerce_ontology#Order1">
-        <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Order"/>
-        <contains rdf:resource="http://www.example.org/ecommerce_ontology#Smartphone"/>
-        <places rdf:resource="http://www.example.org/ecommerce_ontology#JohnDoe"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#PromotionAgent1 -->
-
-    <owl:NamedIndividual rdf:about="http://www.example.org/ecommerce_ontology#PromotionAgent1">
-        <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#PromotionAgent"/>
-        <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#ManagePromotions"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#RecommendProducts -->
-
-    <owl:NamedIndividual rdf:about="http://www.example.org/ecommerce_ontology#RecommendProducts">
-        <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
-        <responsibilityDescription>Recommend products to customers based on their preferences.</responsibilityDescription>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#RecommendationAgent1 -->
-
-    <owl:NamedIndividual rdf:about="http://www.example.org/ecommerce_ontology#RecommendationAgent1">
-        <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#RecommendationAgent"/>
-        <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#RecommendProducts"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#Smartphone -->
-
-    <owl:NamedIndividual rdf:about="http://www.example.org/ecommerce_ontology#Smartphone">
-        <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
-        <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">699.99</price>
-        <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">50</stockLevel>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.example.org/ecommerce_ontology#UpdateInventory -->
-
-    <owl:NamedIndividual rdf:about="http://www.example.org/ecommerce_ontology#UpdateInventory">
-        <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
-        <responsibilityDescription>Monitor and update product inventory levels.</responsibilityDescription>
-    </owl:NamedIndividual>
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+   xmlns="http://www.example.org/ecommerce_ontology#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#f45bee61-5645-41c7-a8c6-ab363ae448de">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Order"/>
+    <customer rdf:datatype="http://www.w3.org/2001/XMLSchema#string">JohnDoe</customer>
+    <product rdf:resource="http://www.example.org/ecommerce_ontology#thilina"/>
+    <quantity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</quantity>
+    <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">pending</status>
+    <orderDate rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2024-12-24T11:18:42.060244</orderDate>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#FeedbackManagementAgent">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Smartphone">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">699.99</price>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">50</stockLevel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Order1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Order"/>
+    <contains rdf:resource="http://www.example.org/ecommerce_ontology#Smartphone"/>
+    <places rdf:resource="http://www.example.org/ecommerce_ontology#JohnDoe"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#thilina">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thilina</name>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">200.0</price>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</stockLevel>
+    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">10.0</discount>
+    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\WhatsApp Image 2024-12-01 at 10.46.05_f92dcf9c.jpg</hasImage>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#CentralCoordinationAgent1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#CentralCoordinationAgent"/>
+    <assignsTask rdf:resource="http://www.example.org/ecommerce_ontology#CustomerAgent1"/>
+    <assignsTask rdf:resource="http://www.example.org/ecommerce_ontology#PromotionAgent1"/>
+    <assignsTask rdf:resource="http://www.example.org/ecommerce_ontology#RecommendationAgent1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#InventoryManagementAgent1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#InventoryManagementAgent"/>
+    <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#UpdateInventory"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#RecommendProducts">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
+    <responsibilityDescription>Recommend products to customers based on their preferences.</responsibilityDescription>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#CustomerAgent">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#FeedbackManagementAgent1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#FeedbackManagementAgent"/>
+    <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#CollectFeedback"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Customer">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#providesFeedback">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Customer"/>
+    <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Feedback"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Product">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#CustomerAgent1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#CustomerAgent"/>
+    <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#ManageCustomerQueries"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#managesInventory">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#InventoryManagementAgent"/>
+    <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#name">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Customer"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Feedback">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#JohnDoe">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Customer"/>
+    <name>John Doe</name>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#RecommendationAgent1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#RecommendationAgent"/>
+    <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#RecommendProducts"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#ManageCustomerQueries">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
+    <responsibilityDescription>Handle customer inquiries and complaints.</responsibilityDescription>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#CentralCoordinationAgent">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#responsibilityDescription">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#CollectFeedback">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
+    <responsibilityDescription>Collect and analyze customer feedback.</responsibilityDescription>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#price">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#contains">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Order"/>
+    <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#assignsTask">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#CentralCoordinationAgent"/>
+    <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#places">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Customer"/>
+    <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Order"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Order">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#PromotionAgent">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#UpdateInventory">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
+    <responsibilityDescription>Monitor and update product inventory levels.</responsibilityDescription>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#rating">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Feedback"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#stockLevel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Agent">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#ManagePromotions">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
+    <responsibilityDescription>Launch and manage promotional campaigns.</responsibilityDescription>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#InventoryManagementAgent">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#RecommendationAgent">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#PromotionAgent1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#PromotionAgent"/>
+    <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#ManagePromotions"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#hasResponsibility">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
+    <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Task">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
 </rdf:RDF>
-
-
-
-<!-- Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi -->
-

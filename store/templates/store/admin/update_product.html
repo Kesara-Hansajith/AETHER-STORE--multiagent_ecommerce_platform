@@ -1,0 +1,58 @@
+{% extends "store/baseAdmin.html" %}
+{% block content %}
+<div class="bg-white shadow-lg rounded-lg max-w-2xl mx-auto mt-10 p-8">
+    <div class="text-center mb-8">
+        <h3 class="text-2xl font-semibold text-gray-800">Update Product</h3>
+        <p class="text-sm text-gray-600 mt-2">Modify product details or remove from inventory</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update">
+        
+        <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
+            <input type="text" name="name" id="name" value="{{ product.name }}" readonly
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        </div>
+
+        <div>
+            <label for="price" class="block text-sm font-medium text-gray-700">Price (Rs.)</label>
+            <input type="number" step="0.01" name="price" id="price" value="{{ product.price }}"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        </div>
+
+        <div>
+            <label for="stock_level" class="block text-sm font-medium text-gray-700">Stock Level</label>
+            <input type="number" name="stock_level" id="stock_level" value="{{ product.stock }}"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        </div>
+
+        <div>
+            <label for="discount" class="block text-sm font-medium text-gray-700">Discount (%)</label>
+            <input type="number" step="0.1" name="discount" id="discount" value="{{ product.discount }}"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        </div>
+
+        <div>
+            <label for="image" class="block text-sm font-medium text-gray-700">New Image (optional)</label>
+            <input type="file" name="image" id="image" accept="image/*"
+                   class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+        </div>
+
+        <div class="flex space-x-4 pt-4">
+            <button type="submit" class="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                Update Product
+            </button>
+        </div>
+    </form>
+
+    <form method="POST" class="mt-6">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="delete">
+        <button type="submit" class="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+            Delete Product
+        </button>
+    </form>
+</div>
+{% endblock %}

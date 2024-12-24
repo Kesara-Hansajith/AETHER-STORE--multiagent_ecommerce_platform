@@ -53,14 +53,6 @@
     <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
     <responsibilityDescription>Monitor and update product inventory levels.</responsibilityDescription>
   </rdf:Description>
-  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#fdssds">
-    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
-    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">fdssds</name>
-    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">211.0</price>
-    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</stockLevel>
-    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.5</discount>
-    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\frog-jumping-icon-sequences-footage-motion-design-cartoon-toad-animal-movement-concept-animation-leap-sequence-vector-341421352.webp</hasImage>
-  </rdf:Description>
   <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#price">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
@@ -69,14 +61,6 @@
   </rdf:Description>
   <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Task">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
-  </rdf:Description>
-  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#oscoo_on800_m.2_ssd">
-    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
-    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Oscoo ON800 M.2 SSD</name>
-    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">4999.0</price>
-    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">20</stockLevel>
-    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</discount>
-    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\bdlpon800128lar1.webp</hasImage>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#ManagePromotions">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
@@ -134,6 +118,7 @@
     <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
     <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">699.99</price>
     <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">50</stockLevel>
+    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</discount>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#FeedbackManagementAgent1">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>

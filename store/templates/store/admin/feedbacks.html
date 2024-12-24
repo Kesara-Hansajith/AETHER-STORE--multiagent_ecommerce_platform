@@ -2,70 +2,47 @@
 {% load custom_filters %}
 
 {% block content %}
-    <div class="bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-10 p-8">
-        <div>
-            <h3 class="text-2xl font-semibold text-gray-800">All Feedback</h3>
-            <p class="text-sm text-gray-600 mt-2">Review user feedback to enhance the platform and improve customer satisfaction.</p>
-        </div>
-        <!-- Feedback List -->
-        <div class="mt-8 border-t border-gray-200 pt-6 space-y-4">
-            {% for feedback in feedbacks %}
-                <div class="p-4 bg-gray-50 shadow rounded-lg flex items-start space-x-4">
-                    <!-- User Details -->
-                    <div class="flex-1">
-					 <h3>{{ feedback.user }}</h3>
-                        <div class="flex items-center space-x-2 mb-2">
-                            <!-- Display Stars -->
-                            <div class="flex">
-                                {% for i in 5|range %}
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                                        fill="{% if i < feedback.rating %}yellow{% else %}gray{% endif %}"
-                                        class="bi bi-star-fill">
-                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
-                                    </svg>
-                                {% endfor %}
-                            </div>
-                            <p class="text-sm text-gray-600">{{ feedback.created_at|date:"F d, Y" }}</p>
-                        </div>
-                        <h3 class="font-semibold text-lg">{{ feedback.name }}</h3>
-                        <p class="text-gray-700 mt-1">{{ feedback.comment }}</p>
-                    </div>
-                    <!-- Delete Button -->
-                    <div class="flex items-center space-x-2">
-                        <form action="{% url 'delete_feedback' feedback.id %}" method="POST" class="inline">
-                            {% csrf_token %}
-                            <button type="submit" 
-                                class="px-3 py-1 text-sm text-red-600 hover:text-red-800 hover:underline focus:outline-none">
-                                Delete
-                            </button>
-                        </form>
+<div class="bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-10 p-8">
+    <!-- Header -->
+    <div>
+        <h3 class="text-2xl font-semibold text-gray-800">All Feedback</h3>
+        <p class="text-sm text-gray-600 mt-2">Review user feedback to enhance the platform and improve customer satisfaction.</p>
+    </div>
+    
+    <!-- Feedback List -->
+    <div class="mt-8 space-y-6 border-t border-gray-200 pt-6">
+        {% for feedback in feedbacks %}
+        <div class="p-6 bg-gray-50 shadow-md hover:shadow-lg rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between transition-shadow duration-300">
+            <div class="flex-1">
+                <h3 class="font-bold text-lg text-indigo-600">{{ feedback.user }}</h3>
+                <p class="text-xs text-gray-400 mt-0">{{ feedback.created_at|date:"F d, Y" }}</p>
+                <div class="flex items-center justify-between mt-3"> 
+                    <div class="flex space-x-1">
+                        {% for i in 5|range %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="20" fill="{% if i < feedback.rating %}#facc15{% else %}#d1d5db{% endif %}" class="bi bi-star-fill">
+                            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                        </svg>
+                        {% endfor %}
                     </div>
                 </div>
-            {% empty %}
-                <p class="text-center text-gray-500 py-4">No feedback available yet.</p>
-            {% endfor %}
-        </div>
-        <!-- Pagination -->
-        {% if feedbacks.paginator.num_pages > 1 %}
-            <div class="mt-8 flex justify-center space-x-4">
-                {% if feedbacks.has_previous %}
-                    <a href="?page={{ feedbacks.previous_page_number }}" 
-                        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-150">
-                        Previous
-                    </a>
-                {% endif %}
-                
-                <span class="px-4 py-2 text-gray-700">
-                    Page {{ feedbacks.number }} of {{ feedbacks.paginator.num_pages }}
-                </span>
-                
-                {% if feedbacks.has_next %}
-                    <a href="?page={{ feedbacks.next_page_number }}" 
-                        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-150">
-                        Next
-                    </a>
-                {% endif %}
+                <p class="text-gray-700 mt-2 leading-relaxed">{{ feedback.comment }}</p>
             </div>
-        {% endif %}
+            
+
+            <div class="flex items-center justify-between mt-4 sm:mt-0 sm:ml-6 space-x-4">
+                <form action="{% url 'delete_feedback' feedback.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400">
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center text-gray-500 py-6">
+            <p>No feedback available yet.</p>
+        </div>
+        {% endfor %}
     </div>
+</div>
 {% endblock %}

@@ -41,7 +41,7 @@
                         </span>
                     </div>
                     <p class="text-xl font-bold text-indigo-600 mt-1">
-                        Rs.{{ product.promotional_price|default:product.price|floatformat:2 }}
+                        Rs.{{ product.final_price|floatformat:2 }}
                     </p>
                     {% else %}
                     <p class="text-xl font-bold text-gray-700 mt-1">Rs.{{ product.price|floatformat:2 }}</p>

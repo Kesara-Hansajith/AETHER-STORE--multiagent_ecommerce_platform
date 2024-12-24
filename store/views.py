@@ -154,6 +154,10 @@ class FeedbackView(LoginRequiredMixin, BaseOntologyView):
             raise PermissionDenied
             
         feedback_id = request.POST.get('feedback_id')
+        if not feedback_id:
+            messages.error(request, 'Feedback ID is required')
+            return redirect('view_feedbacks')
+            
         try:
             feedback = get_object_or_404(Feedback, id=feedback_id)
             feedback.delete()
@@ -164,14 +168,21 @@ class FeedbackView(LoginRequiredMixin, BaseOntologyView):
         return redirect('view_feedbacks')
 
 class UserDashboardView(LoginRequiredMixin, BaseOntologyView):
-    """User dashboard view"""
+    """User dashboard view with integrated product display"""
     def get(self, request):
         if request.session.get('user_type') != 'user':
             raise PermissionDenied
         
+        # Create instance of ProductView to access product methods
+        product_view = UserProductView()
+        promotional_products, regular_products = product_view.get_products_by_discount()
+        
         context = {
             'username': request.session.get('username'),
-            'last_login': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            'last_login': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'promotional_products': promotional_products,
+            'regular_products': regular_products,
+            'MEDIA_URL': settings.MEDIA_URL
         }
         return render(request, 'store/baseUser.html', context)
 
@@ -184,8 +195,10 @@ class AdminDashboardView(LoginRequiredMixin, BaseOntologyView):
 
 class ProductView(BaseOntologyView):
     """Base class for product views"""
-    def get_all_products(self):
-        products = []
+    def get_products_by_discount(self):
+        promotional_products = []
+        regular_products = []
+        
         for product in self.graph.subjects(RDF.type, self.ECOM_NS.Product):
             try:
                 product_data = {
@@ -200,24 +213,58 @@ class ProductView(BaseOntologyView):
                 product_data['final_price'] = round(
                     product_data['price'] * (1 - product_data['discount']/100), 2
                 )
-                products.append(product_data)
+                
+                # Separate products based on discount
+                if product_data['discount'] > 0:
+                    promotional_products.append(product_data)
+                else:
+                    regular_products.append(product_data)
+                    
             except Exception as e:
                 print(f"Error processing product {product}: {e}")
                 continue
-        return products
+                
+        return promotional_products, regular_products
 
 class UserProductView(LoginRequiredMixin, ProductView):
     """User product listing view"""
     def get(self, request):
         if request.session.get('user_type') != 'user':
             raise PermissionDenied
+            
+        promotional_products, regular_products = self.get_products_by_discount()
+        
         return render(request, 'store/user/userproducts.html', {
-            'userproducts': self.get_all_products(),
+            'promotional_products': promotional_products,
+            'regular_products': regular_products,
             'MEDIA_URL': settings.MEDIA_URL
         })
 
 class AdminProductView(LoginRequiredMixin, ProductView):
     """Admin product management view"""
+    def get_all_products(self):
+        """Retrieve all products from the RDF graph with their details"""
+        products = []
+        for product in self.graph.subjects(RDF.type, self.ECOM_NS.Product):
+            try:
+                product_data = {
+                    'name': str(self.graph.value(product, self.ECOM_NS.name)),
+                    'price': float(self.graph.value(product, self.ECOM_NS.price)),
+                    'stock': int(self.graph.value(product, self.ECOM_NS.stockLevel)),
+                    'discount': float(self.graph.value(product, self.ECOM_NS.discount, default=Literal(0.0))),
+                    'image': str(self.graph.value(product, self.ECOM_NS.hasImage, default=Literal("default_image.jpg")))
+                }
+                # Calculate final price if there's a discount
+                if product_data['discount'] > 0:
+                    product_data['final_price'] = round(
+                        product_data['price'] * (1 - product_data['discount']/100), 2
+                    )
+                products.append(product_data)
+            except Exception as e:
+                print(f"Error processing product {product}: {e}")
+                continue
+        return products
+
     def get(self, request, product_id=None):
         if request.session.get('user_type') != 'admin':
             raise PermissionDenied
@@ -315,8 +362,18 @@ class OrderView(LoginRequiredMixin, BaseOntologyView):
     def get(self, request):
         if request.session.get('user_type') != 'user':
             raise PermissionDenied
-        products = UserProductView().get_all_products()
-        return render(request, 'store/user/order_form.html', {'products': products})
+            
+        # Get both promotional and regular products
+        user_product_view = UserProductView()
+        promotional_products, regular_products = user_product_view.get_products_by_discount()
+        
+        # Combine all products for the order form
+        all_products = promotional_products + regular_products
+        
+        return render(request, 'store/user/order_form.html', {
+            'products': all_products,
+            'MEDIA_URL': settings.MEDIA_URL
+        })
     
     def post(self, request):
         try:
@@ -344,6 +401,14 @@ class OrderView(LoginRequiredMixin, BaseOntologyView):
                 messages.error(request, f'Insufficient stock. Only {stock} available')
                 return redirect('order')
             
+            # Get product price and discount
+            price = float(self.graph.value(product, self.ECOM_NS.price))
+            discount = float(self.graph.value(product, self.ECOM_NS.discount, 
+                                            default=Literal(0.0)))
+            
+            # Calculate final price
+            final_price = price * (1 - discount/100)
+            
             # Create order
             order_id = str(uuid.uuid4())
             order = URIRef(self.ECOM_NS + order_id)
@@ -355,6 +420,7 @@ class OrderView(LoginRequiredMixin, BaseOntologyView):
                                               datatype=XSD.string)),
                 (self.ECOM_NS.product, product),
                 (self.ECOM_NS.quantity, Literal(quantity, datatype=XSD.integer)),
+                (self.ECOM_NS.price, Literal(final_price, datatype=XSD.float)),
                 (self.ECOM_NS.status, Literal("pending", datatype=XSD.string)),
                 (self.ECOM_NS.orderDate, Literal(datetime.now().isoformat(), 
                                                datatype=XSD.dateTime))

@@ -261,6 +261,7 @@ class AdminProductView(LoginRequiredMixin, ProductView):
                 continue
         return products
     
+    
     def get(self, request, product_id=None):
         if request.session.get('user_type') != 'admin':
             raise PermissionDenied

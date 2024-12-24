@@ -1,11 +1,11 @@
 {% extends "store/baseAdmin.html" %}
 {% block content %}
-<<<<<<< HEAD
 
-<div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-    <h2 class="text-2xl font-bold mb-6">Update Product</h2>
-    <p class="text-gray-600 mb-8">Modify product details or remove from inventory</p>
-
+<div class="bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-10 p-8">
+    <div>
+        <h3 class="text-2xl font-semibold text-gray-800">Update Product</h2>
+        <p class="text-sm text-gray-600 mt-2">Modify product details or remove from inventory</p>
+    </div>
     {% if messages %}
     <div class="mb-4">
         {% for message in messages %}
@@ -13,168 +13,76 @@
             {{ message }}
         </div>
         {% endfor %}
-=======
-<div class="bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-10 p-8">
-    <div>
-        <h3 class="text-2xl font-semibold text-gray-800">Update Product</h3>
-        <p class="text-sm text-gray-600 mt-2">Modify product details or remove from inventory</p>
->>>>>>> a9c35c315cd760d94ebb745418fe38e481df0b86
     </div>
     {% endif %}
 
-<<<<<<< HEAD
-    <form method="POST" enctype="multipart/form-data" class="space-y-6">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="update">
-        
-        <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
-                Product Name
-            </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                   type="text" 
-                   id="name" 
-                   name="name" 
-                   value="{{ product.name }}" 
-                   readonly>
+    <div class="mt-8 border-t border-gray-200 pt-6">
+        <form method="POST" enctype="multipart/form-data" class="space-y-2">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update">
+            
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
+                    <div class="relative mt-2">
+                        <input type="text" id="name" name="name" value="{{ product.name }}" readonly 
+                            class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+
+            <div>
+                <label for="price" class="block text-sm font-medium text-gray-700">Price (Rs.)</label>
+                <div class="relative mt-2">
+                    <input type="number" step="0.01" name="price" id="price" value="{{ product.price }}"
+                        class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+
+            <div>
+                <label for="stock_level" class="block text-sm font-medium text-gray-700">Stock Level</label>
+                <div class="relative mt-2">
+                    <input type="number" name="stock_level" id="stock_level" value="{{ product.stock }}"
+                        class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+
+            <div>
+                <label for="discount" class="block text-sm font-medium text-gray-700">Discount (%)</label>
+                <div class="relative mt-2">
+                    <input type="number" step="0.1" name="discount" id="discount" value="{{ product.discount }}"
+                        class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>               
+            </div>
+
+            <div class="sm:col-span-2">
+                <label for="image" class="block text-sm font-medium text-gray-700">New Image (optional)</label>
+                <div class="relative mt-2">
+                    <input type="file" name="image" id="image" accept="image/*"
+                    class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <p class="mt-1 text-sm text-gray-500">Upload an image of the product (JPEG, PNG).</p>
+            </div>
         </div>
 
-        <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="price">
-                Price (Rs.)
-            </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                   type="number" 
-                   id="price" 
-                   name="price" 
-                   value="{{ product.price }}" 
-                   step="0.01" 
-                   required>
-        </div>
 
-        <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="stock_level">
-                Stock Level
-            </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                   type="number" 
-                   id="stock_level" 
-                   name="stock_level" 
-                   value="{{ product.stock }}" 
-                   required>
-        </div>
+            <div class="flex justify-end space-x-9 pt-4">
+                <button class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+                        type="submit">
+                    Update Product
+                </button>
+            </div>
+        </form>
+    </div>
 
-        <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="discount">
-                Discount (%)
-            </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                   type="number" 
-                   id="discount" 
-                   name="discount" 
-                   value="{{ product.discount }}" 
-                   min="0" 
-                   max="100" 
-                   step="0.1" 
-                   required>
-        </div>
-
-        <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="image">
-                New Image (optional)
-            </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                   type="file" 
-                   id="image" 
-                   name="image" 
-                   accept="image/*">
-        </div>
-
-        <div class="flex items-center justify-between mt-8">
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    type="submit">
-                Update Product
-            </button>
-        </div>
-    </form>
-
-    <form method="POST" class="mt-8">
+    <form method="POST" class="inline">
         {% csrf_token %}
         <input type="hidden" name="action" value="delete">
-        <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+        <button class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out"
                 type="submit"
                 onclick="return confirm('Are you sure you want to delete this product?')">
             Delete Product
         </button>
     </form>
-=======
-    <div class="mt-8 border-t border-gray-200 pt-6">
-        <form method="POST" enctype="multipart/form-data" class="space-y-2">
-            {% csrf_token %}
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
-                    <div class="relative mt-2">
-                        <input type="text" name="name" id="name" value="{{ product.name }}" readonly
-                            class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-                </div>
-
-                <div>
-                    <label for="price" class="block text-sm font-medium text-gray-700">Price (Rs.)</label>
-                    <div class="relative mt-2">
-                        <input type="number" step="0.01" name="price" id="price" value="{{ product.price }}"
-                            class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-                </div>
-
-                <div>
-                    <label for="stock_level" class="block text-sm font-medium text-gray-700">Stock Level</label>
-                    <div class="relative mt-2">
-                        <input type="number" name="stock_level" id="stock_level" value="{{ product.stock }}"
-                            class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-                </div>
-
-                <div>
-                    <label for="discount" class="block text-sm font-medium text-gray-700">Discount (%)</label>
-                    <div class="relative mt-2">
-                        <input type="number" step="0.1" name="discount" id="discount" value="{{ product.discount }}"
-                            class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>               
-                </div>
-
-                <div class="sm:col-span-2">
-                    <label for="image" class="block text-sm font-medium text-gray-700">New Image (optional)</label>
-                    <div class="relative mt-2">
-                        <input type="file" name="image" id="image" accept="image/*"
-                        class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-                    <p class="mt-1 text-sm text-gray-500">Upload an image of the product (JPEG, PNG).</p>
-                </div>
-            </div>
-
-            <!-- Buttons Container -->
-            <div class="flex justify-end space-x-9 pt-4 ">
-
-                <button type="submit" 
-                    class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
-                    Update Product
-                </button>
-
-
-                <form method="POST" class="inline">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="delete">
-                    <button type="submit"
-                        class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out">
-                        Delete Product
-                    </button>
-                </form>
-            </div>
-        </form>
-    </div>
->>>>>>> a9c35c315cd760d94ebb745418fe38e481df0b86
 </div>
 
 {% endblock %}

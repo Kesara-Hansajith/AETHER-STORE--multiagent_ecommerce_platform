@@ -23,7 +23,7 @@
                     </div>
                 </div>
                 <div>
-                    <label for="price" class="block text-sm font-medium text-gray-700">Price (LKR)</label>
+                    <label for="price" class="block text-sm font-medium text-gray-700">Price (Rs.)</label>
                     <div class="relative mt-2">
                         <input type="number" step="0.01" name="price" id="price" required placeholder="Enter product price in LKR" 
                             class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
@@ -84,7 +84,7 @@
                         {% for product in products %}
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ product.name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">LKR {{ product.price }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rs.{{ product.price }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ product.stock }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ product.discount }}%</td>
                         </tr>

@@ -241,112 +241,122 @@ class UserProductView(LoginRequiredMixin, ProductView):
         })
 
 class AdminProductView(LoginRequiredMixin, ProductView):
-    """Admin product management view"""
+    
     def get_all_products(self):
-        """Retrieve all products from the RDF graph with their details"""
         products = []
         for product in self.graph.subjects(RDF.type, self.ECOM_NS.Product):
             try:
+                product_id = str(product).split('#')[-1]
                 product_data = {
+                    'id': product_id,
                     'name': str(self.graph.value(product, self.ECOM_NS.name)),
                     'price': float(self.graph.value(product, self.ECOM_NS.price)),
                     'stock': int(self.graph.value(product, self.ECOM_NS.stockLevel)),
                     'discount': float(self.graph.value(product, self.ECOM_NS.discount, default=Literal(0.0))),
                     'image': str(self.graph.value(product, self.ECOM_NS.hasImage, default=Literal("default_image.jpg")))
                 }
-                # Calculate final price if there's a discount
-                if product_data['discount'] > 0:
-                    product_data['final_price'] = round(
-                        product_data['price'] * (1 - product_data['discount']/100), 2
-                    )
                 products.append(product_data)
             except Exception as e:
                 print(f"Error processing product {product}: {e}")
                 continue
         return products
-
+    
     def get(self, request, product_id=None):
         if request.session.get('user_type') != 'admin':
             raise PermissionDenied
         
         if product_id:
-            # Find the specific product for updating
-            product = None
-            for p in self.graph.subjects(RDF.type, self.ECOM_NS.Product):
-                if str(p).split('#')[-1] == product_id:
-                    product = {
-                        'id': product_id,
-                        'name': str(self.graph.value(p, self.ECOM_NS.name)),
-                        'price': float(self.graph.value(p, self.ECOM_NS.price)),
-                        'stock': int(self.graph.value(p, self.ECOM_NS.stockLevel)),
-                        'discount': float(self.graph.value(p, self.ECOM_NS.discount, default=Literal(0.0))),
-                        'image': str(self.graph.value(p, self.ECOM_NS.hasImage, default=Literal("default_image.jpg")))
-                    }
-                    break
-            
-            if not product:
-                messages.error(request, 'Product not found')
-                return redirect('admin_product_list')
+            try:
+                product_uri = URIRef(self.ECOM_NS + product_id)
+                if (product_uri, RDF.type, self.ECOM_NS.Product) not in self.graph:
+                    messages.error(request, 'Product not found')
+                    return redirect('admin_product_list')
                 
-            return render(request, 'store/admin/update_product.html', {'product': product})
+                product = {
+                    'id': product_id,
+                    'name': str(self.graph.value(product_uri, self.ECOM_NS.name)),
+                    'price': float(self.graph.value(product_uri, self.ECOM_NS.price)),
+                    'stock': int(self.graph.value(product_uri, self.ECOM_NS.stockLevel)),
+                    'discount': float(self.graph.value(product_uri, self.ECOM_NS.discount, default=Literal(0.0))),
+                    'image': str(self.graph.value(product_uri, self.ECOM_NS.hasImage, default=Literal("default_image.jpg")))
+                }
+                return render(request, 'store/admin/update_product.html', {'product': product})
+            except Exception as e:
+                messages.error(request, f'Error loading product: {str(e)}')
+                return redirect('admin_product_list')
         
         return render(request, 'store/admin/adminproducts.html', {
             'adminproducts': self.get_all_products(),
             'MEDIA_URL': settings.MEDIA_URL
         })
 
-    def post(self, request, product_id=None):
+    def post(self, request, product_id):
         if request.session.get('user_type') != 'admin':
             raise PermissionDenied
 
-        action = request.POST.get('action')
-        
         try:
-            # Find the product in the graph
-            product = None
-            for p in self.graph.subjects(RDF.type, self.ECOM_NS.Product):
-                if str(p).split('#')[-1] == product_id:
-                    product = p
-                    break
+            product_uri = URIRef(self.ECOM_NS + product_id)
             
-            if not product:
+            if (product_uri, RDF.type, self.ECOM_NS.Product) not in self.graph:
                 messages.error(request, 'Product not found')
                 return redirect('admin_product_list')
 
+            action = request.POST.get('action')
+
             if action == 'delete':
+                # Get current image path before deleting
+                current_image = str(self.graph.value(product_uri, self.ECOM_NS.hasImage))
+                if current_image and current_image != "default_image.jpg":
+                    # Delete the image file if it exists
+                    image_path = os.path.join(settings.MEDIA_ROOT, current_image)
+                    if os.path.exists(image_path):
+                        os.remove(image_path)
+
                 # Remove all triples about this product
-                for p, o in self.graph.predicate_objects(product):
-                    self.graph.remove((product, p, o))
+                for p, o in self.graph.predicate_objects(product_uri):
+                    self.graph.remove((product_uri, p, o))
                 messages.success(request, 'Product deleted successfully')
                 
             elif action == 'update':
-                # Update product properties
-                updates = [
-                    (self.ECOM_NS.price, Literal(float(request.POST.get('price', 0)), datatype=XSD.float)),
-                    (self.ECOM_NS.stockLevel, Literal(int(request.POST.get('stock_level', 0)), datatype=XSD.integer)),
-                    (self.ECOM_NS.discount, Literal(float(request.POST.get('discount', 0)), datatype=XSD.float))
-                ]
+                # Update basic product information
+                updates = {
+                    self.ECOM_NS.price: Literal(float(request.POST.get('price', 0)), 
+                                              datatype=XSD.float),
+                    self.ECOM_NS.stockLevel: Literal(int(request.POST.get('stock_level', 0)), 
+                                                   datatype=XSD.integer),
+                    self.ECOM_NS.discount: Literal(float(request.POST.get('discount', 0)), 
+                                                 datatype=XSD.float)
+                }
 
-                # Handle image update if provided
+                # Handle image update
                 if request.FILES.get('image'):
+                    # Delete old image if it exists and isn't the default
+                    current_image = str(self.graph.value(product_uri, self.ECOM_NS.hasImage))
+                    if current_image and current_image != "default_image.jpg":
+                        old_image_path = os.path.join(settings.MEDIA_ROOT, current_image)
+                        if os.path.exists(old_image_path):
+                            os.remove(old_image_path)
+
+                    # Save new image
                     image = request.FILES['image']
                     image_path = os.path.join('product_images', image.name)
-                    os.makedirs(os.path.dirname(os.path.join(settings.MEDIA_ROOT, image_path)), exist_ok=True)
+                    full_path = os.path.join(settings.MEDIA_ROOT, image_path)
                     
-                    with open(os.path.join(settings.MEDIA_ROOT, image_path), 'wb+') as f:
+                    # Ensure directory exists
+                    os.makedirs(os.path.dirname(full_path), exist_ok=True)
+                    
+                    with open(full_path, 'wb+') as f:
                         for chunk in image.chunks():
                             f.write(chunk)
-                            
-                    updates.append((self.ECOM_NS.hasImage, Literal(image_path, datatype=XSD.string)))
+                    
+                    updates[self.ECOM_NS.hasImage] = Literal(image_path, datatype=XSD.string)
 
                 # Update the graph
-                for predicate, new_value in updates:
-                    # Remove old value if it exists
-                    old_value = self.graph.value(product, predicate)
+                for predicate, new_value in updates.items():
+                    old_value = self.graph.value(product_uri, predicate)
                     if old_value:
-                        self.graph.remove((product, predicate, old_value))
-                    # Add new value
-                    self.graph.add((product, predicate, new_value))
+                        self.graph.remove((product_uri, predicate, old_value))
+                    self.graph.add((product_uri, predicate, new_value))
 
                 messages.success(request, 'Product updated successfully')
 

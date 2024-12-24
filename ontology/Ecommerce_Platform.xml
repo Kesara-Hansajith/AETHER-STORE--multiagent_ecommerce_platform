@@ -4,6 +4,261 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
 >
+<<<<<<< HEAD
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#CustomerAgent1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#CustomerAgent"/>
+    <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#ManageCustomerQueries"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#ManageCustomerQueries">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
+    <responsibilityDescription>Handle customer inquiries and complaints.</responsibilityDescription>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#jbl_wireless_mic_dual">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">JBL Wireless Mic Dual</name>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">38990.0</price>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">25</stockLevel>
+    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">12.0</discount>
+    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\bdlpjbljblddualbkn.webp</hasImage>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Feedback">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Customer">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#InventoryManagementAgent1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#InventoryManagementAgent"/>
+    <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#UpdateInventory"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#PromotionAgent">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#gamdias_poseidon_m2">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gamdias Poseidon M2</name>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">8450.0</price>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">49</stockLevel>
+    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</discount>
+    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\bdlpm2bklar.png</hasImage>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#CustomerAgent">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#providesFeedback">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Customer"/>
+    <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Feedback"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#asus_tuf_gaming_f15">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Asus TUF Gaming F15</name>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">450000.0</price>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">12</stockLevel>
+    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">5.0</discount>
+    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\bdlpfx507zu4lar.webp</hasImage>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#responsibilityDescription">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Order1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Order"/>
+    <contains rdf:resource="http://www.example.org/ecommerce_ontology#Smartphone"/>
+    <places rdf:resource="http://www.example.org/ecommerce_ontology#JohnDoe"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#UpdateInventory">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
+    <responsibilityDescription>Monitor and update product inventory levels.</responsibilityDescription>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Task">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#golden_field_z2_casing">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Golden Field Z2 Casing</name>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">16250.0</price>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</stockLevel>
+    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</discount>
+    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\bdlpz2lar.png</hasImage>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#price">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#FeedbackManagementAgent1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#FeedbackManagementAgent"/>
+    <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#CollectFeedback"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#samsung_galaxy_s12">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Samsung Galaxy S12</name>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">250000.0</price>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">25</stockLevel>
+    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">5.0</discount>
+    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\images.jpeg</hasImage>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Smartphone">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">699.99</price>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">50</stockLevel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#stockLevel">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#RecommendProducts">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
+    <responsibilityDescription>Recommend products to customers based on their preferences.</responsibilityDescription>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#JohnDoe">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Customer"/>
+    <name>John Doe</name>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#CentralCoordinationAgent">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#places">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Customer"/>
+    <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Order"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#meetion_cooling_pad_-_cp3030">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Meetion Cooling Pad - CP3030</name>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">5650.0</price>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</stockLevel>
+    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</discount>
+    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\bdlpcoo1288lar.png</hasImage>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#RecommendationAgent1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#RecommendationAgent"/>
+    <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#RecommendProducts"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#RecommendationAgent">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#abans_5l_air_fryer">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Abans 5L Air Fryer</name>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">49990.0</price>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">18</stockLevel>
+    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">60.0</discount>
+    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\abafryaf50cdglar1.webp</hasImage>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#name">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Customer"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Product">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#CentralCoordinationAgent1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#CentralCoordinationAgent"/>
+    <assignsTask rdf:resource="http://www.example.org/ecommerce_ontology#CustomerAgent1"/>
+    <assignsTask rdf:resource="http://www.example.org/ecommerce_ontology#PromotionAgent1"/>
+    <assignsTask rdf:resource="http://www.example.org/ecommerce_ontology#RecommendationAgent1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#assignsTask">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#CentralCoordinationAgent"/>
+    <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#6970a870-8961-4dfc-9fbb-cf9aba17aa7f">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Order"/>
+    <customer rdf:datatype="http://www.w3.org/2001/XMLSchema#string">JohnDoe</customer>
+    <product rdf:resource="http://www.example.org/ecommerce_ontology#abans_5l_air_fryer"/>
+    <quantity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</quantity>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">19996.0</price>
+    <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">pending</status>
+    <orderDate rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2024-12-24T21:29:18.291481</orderDate>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#hp_ink_tank_115_printer">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HP Ink Tank 115 Printer</name>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">45600.0</price>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">33</stockLevel>
+    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</discount>
+    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\bdlphp115n1.png</hasImage>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#abans_32_inch_led_tv">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Abans 32 inch LED TV</name>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">64999.0</price>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">150</stockLevel>
+    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">31.0</discount>
+    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\abtvl32t1a.webp</hasImage>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Order">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#PromotionAgent1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#PromotionAgent"/>
+    <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#ManagePromotions"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#managesInventory">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#InventoryManagementAgent"/>
+    <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#ManagePromotions">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
+    <responsibilityDescription>Launch and manage promotional campaigns.</responsibilityDescription>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#gigabyte_geforce_rtx™_4060">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gigabyte GeForce RTX™ 4060</name>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">176350.0</price>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</stockLevel>
+    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</discount>
+    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\bdlprtx4060oclar.png</hasImage>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#contains">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Order"/>
+    <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#hasResponsibility">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
+    <rdfs:range rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#rating">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.example.org/ecommerce_ontology#Feedback"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#CollectFeedback">
+=======
   <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#FeedbackManagementAgent1">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
     <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#FeedbackManagementAgent"/>
@@ -113,12 +368,22 @@
     <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#ManagePromotions"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#CentralCoordinationAgent1">
+>>>>>>> a9c35c315cd760d94ebb745418fe38e481df0b86
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#CentralCoordinationAgent"/>
-    <assignsTask rdf:resource="http://www.example.org/ecommerce_ontology#CustomerAgent1"/>
-    <assignsTask rdf:resource="http://www.example.org/ecommerce_ontology#PromotionAgent1"/>
-    <assignsTask rdf:resource="http://www.example.org/ecommerce_ontology#RecommendationAgent1"/>
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
+    <responsibilityDescription>Collect and analyze customer feedback.</responsibilityDescription>
   </rdf:Description>
+<<<<<<< HEAD
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#InventoryManagementAgent">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#FeedbackManagementAgent">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:subClassOf rdf:resource="http://www.example.org/ecommerce_ontology#Agent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Agent">
+=======
   <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#jbl_wireless_mic_dual">
     <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
     <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">JBL Wireless Mic Dual</name>
@@ -251,6 +516,7 @@
     <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">50</stockLevel>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#Task">
+>>>>>>> a9c35c315cd760d94ebb745418fe38e481df0b86
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#managesInventory">

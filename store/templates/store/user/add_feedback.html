@@ -1,0 +1,77 @@
+{% extends "store/baseUser.html" %}
+
+{% block content %}
+<div class="bg-white shadow-lg rounded-lg max-w-2xl mx-auto mt-10 p-8">
+    <div>
+    <!-- Feedback Form Heading -->
+    <div class="text-center">
+        <h3 class="text-2xl font-semibold text-gray-800">Feedback Form</h3>
+        <p class="text-sm text-gray-600 mt-2">We vlue yur feedback.Help us improve by sharing your thoughts and suggestions.</p>
+    </div>
+
+    <!-- Feedback Form -->
+    <div class="mt-8 border-t border-gray-200 pt-6">
+        <form action="#" method="POST" class="mt-6 space-y-6">
+            {% csrf_token %}
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                <div class="relative mt-2">
+                    <input type="text" name="name" id="name" placeholder="Enter your name"
+                        class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <div class="relative mt-2">
+                    <input type="email" name="email" id="email" placeholder="Enter your email"
+                        class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+            <div>
+                <label for="rating" class="block text-sm font-medium text-gray-700">Rating</label>
+                <div class="flex items-center mt-2 space-x-2">
+                    {% for i in range %}
+                    <button type="button" class="star text-gray-400 hover:text-yellow-500 transition-colors">
+                            ★
+                    </button>
+                    {% endfor %}
+                    <input type="hidden" name="rating" id="rating" value="0">
+                </div>
+            </div>
+            <div>
+                <label for="feedback" class="block text-sm font-medium text-gray-700">Message</label>
+                <div class="relative mt-2">
+                    <textarea name="feedback" id="feedback" rows="5" placeholder="Write your feedback here..."
+                        class="block w-full pl-3 pr-3 py-3 border border-gray-300 text-base rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                </div>
+                </div>
+            <div class="flex justify-end">
+                <button type="submit"
+                    class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Rating with Stars -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('rating');
+
+        stars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+                ratingInput.value = index + 1; // Set the rating value
+                stars.forEach((s, i) => {
+                    s.classList.toggle('text-yellow-500', i <= index); // Highlight selected stars
+                    s.classList.toggle('text-gray-400', i > index);   // Reset others
+                });
+            });
+        });
+    });
+    </script>
+</div>
+{% endblock %}
+
+

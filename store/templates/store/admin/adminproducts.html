@@ -40,7 +40,7 @@
                 </div>                
                 <div class="mt-4">
                     {% if product.stock > 0 %}
-                    <a href="{% url 'place_order' %}?product={{ product.name }}" 
+                    <a href="{% url 'update_product' product_id=product.name|lower|cut:' ' %}"
                         class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-300">
                         Update Product
                     </a>

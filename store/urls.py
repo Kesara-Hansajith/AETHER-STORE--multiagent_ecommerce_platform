@@ -17,4 +17,5 @@ urlpatterns = [
     path('feedbacks/', FeedbackView.as_view(), name='view_feedbacks'),
     path('feedbacks/delete/<int:pk>/', FeedbackView.as_view(), name='delete_feedback'),
     path('feedback/add/', AddFeedbackView.as_view(), name='add_feedback'),
+    path('update-product/<str:product_id>/', AdminProductView.as_view(), name='update_product'),
 ]

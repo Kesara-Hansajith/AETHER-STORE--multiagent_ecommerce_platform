@@ -30,11 +30,11 @@
             
 
             <div class="flex items-center justify-between mt-4 sm:mt-0 sm:ml-6 space-x-4">
-<form method="POST" action="{% url 'view_feedbacks' %}">
-    {% csrf_token %}
-    <input type="hidden" name="feedback_id" value="{{ feedback.id }}">
-    <button type="submit" class="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400">Delete</button>
-</form>
+                <form method="POST" action="{% url 'view_feedbacks' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="feedback_id" value="{{ feedback.id }}">
+                    <button type="submit" class="px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400">Delete</button>
+                </form>
             </div>
         </div>
         {% empty %}

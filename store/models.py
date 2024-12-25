@@ -1,5 +1,5 @@
 from django.db import models
-
+import uuid
 
 class Product(models.Model):
     name = models.CharField(max_length=200)
@@ -29,3 +29,13 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"Feedback from {self.user} - Rating: {self.rating}"
+
+class Feedback(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.CharField(max_length=100)
+    rating = models.IntegerField()
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Feedback from {self.user}"

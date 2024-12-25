@@ -1,6 +1,5 @@
 {% extends "store/baseAdmin.html" %}
 {% block content %}
-
 <div class="bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-10 p-8">
     <div>
         <h3 class="text-2xl font-semibold text-gray-800">Update Product</h2>
@@ -13,9 +12,8 @@
             {{ message }}
         </div>
         {% endfor %}
-    </div>
     {% endif %}
-
+    
     <div class="mt-8 border-t border-gray-200 pt-6">
         <form method="POST" enctype="multipart/form-data" class="space-y-2">
             {% csrf_token %}

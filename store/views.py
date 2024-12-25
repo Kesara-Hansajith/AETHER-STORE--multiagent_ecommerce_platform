@@ -14,8 +14,6 @@ import uuid
 import os
 from datetime import datetime
 
-
-
 class BaseOntologyView(View):
     """Base view for handling RDF graph operations"""
     def __init__(self):
@@ -115,76 +113,76 @@ class AddFeedbackView(LoginRequiredMixin, BaseOntologyView):
                 messages.error(request, 'Invalid rating value')
                 return redirect('add_feedback')
                 
-            # Create feedback in database
+            # Generate UUID first - this will be used for both database and ontology
+            feedback_id = str(uuid.uuid4())
+            
+            # Create feedback in database with the same UUID
             feedback = Feedback.objects.create(
+                id=feedback_id,  # Use the UUID as the primary key
                 user=name,
                 rating=rating,
                 comment=feedback_text
             )
             
-            # Add feedback to ontology
-            feedback_id = str(uuid.uuid4())
+            # Add feedback to ontology using the same UUID
             feedback_uri = URIRef(self.ECOM_NS + feedback_id)
             
-            feedback_data = [
+            # Add feedback properties to graph
+            feedback_properties = [
                 (RDF.type, self.ECOM_NS.Feedback),
                 (self.ECOM_NS.feedbackUser, Literal(name, datatype=XSD.string)),
-                (self.ECOM_NS.feedbackEmail, Literal(email, datatype=XSD.string)),
-                (self.ECOM_NS.feedbackRating, Literal(rating, datatype=XSD.integer)),
-                (self.ECOM_NS.feedbackComment, Literal(feedback_text, datatype=XSD.string)),
-                (self.ECOM_NS.feedbackDate, Literal(datetime.now().isoformat(), datatype=XSD.dateTime))
+                (self.ECOM_NS.userEmail, Literal(email, datatype=XSD.string)),
+                (self.ECOM_NS.rating, Literal(rating, datatype=XSD.integer)),
+                (self.ECOM_NS.comment, Literal(feedback_text, datatype=XSD.string)),
+                (self.ECOM_NS.submissionDate, Literal(datetime.now().isoformat(), datatype=XSD.dateTime))
             ]
             
-            # Add all feedback properties to the graph
-            for predicate, obj in feedback_data:
+            for predicate, obj in feedback_properties:
                 self.graph.add((feedback_uri, predicate, obj))
-            
-            # Save the updated ontology
+                
             self.save_graph()
             
             messages.success(request, 'Thank you for your feedback!')
-            return redirect('user_product_list')
+            return redirect('add_feedback')
             
         except Exception as e:
             messages.error(request, f'Error submitting feedback: {str(e)}')
             return redirect('add_feedback')
 
+
 class FeedbackView(LoginRequiredMixin, BaseOntologyView):
     """View for handling feedback display and management with ontology integration"""
-    def get_feedback_from_ontology(self):
-        """Retrieve feedback data from the ontology"""
+    def get(self, request):
+        if request.session.get('user_type') != 'admin':
+            raise PermissionDenied
+            
         feedbacks = []
+        # Query all feedback from ontology
         for feedback in self.graph.subjects(RDF.type, self.ECOM_NS.Feedback):
             try:
                 feedback_data = {
                     'id': str(feedback).split('#')[-1],
                     'user': str(self.graph.value(feedback, self.ECOM_NS.feedbackUser)),
-                    'email': str(self.graph.value(feedback, self.ECOM_NS.feedbackEmail)),
-                    'rating': int(self.graph.value(feedback, self.ECOM_NS.feedbackRating)),
-                    'comment': str(self.graph.value(feedback, self.ECOM_NS.feedbackComment)),
-                    'created_at': self.graph.value(feedback, self.ECOM_NS.feedbackDate)
+                    'email': str(self.graph.value(feedback, self.ECOM_NS.userEmail)),
+                    'rating': int(self.graph.value(feedback, self.ECOM_NS.rating)),
+                    'comment': str(self.graph.value(feedback, self.ECOM_NS.comment)),
+                    'created_at': self.graph.value(feedback, self.ECOM_NS.submissionDate)
                 }
                 feedbacks.append(feedback_data)
             except Exception as e:
                 print(f"Error processing feedback {feedback}: {str(e)}")
                 continue
-                
-        return sorted(feedbacks, key=lambda x: x['created_at'], reverse=True)
-    
-    def get(self, request):
-        if request.session.get('user_type') != 'admin':
-            raise PermissionDenied
-            
-        # Get feedback from both database and ontology
-        feedback_list = self.get_feedback_from_ontology()
+        
+        # Sort feedbacks by submission date (newest first)
+        feedbacks.sort(key=lambda x: x['created_at'], reverse=True)
         
         # Paginate the feedback list
-        paginator = Paginator(feedback_list, 10)
+        paginator = Paginator(feedbacks, 10)
         page = request.GET.get('page')
-        feedbacks = paginator.get_page(page)
+        paginated_feedbacks = paginator.get_page(page)
         
         context = {
-            'feedbacks': feedbacks,
+            'feedbacks': paginated_feedbacks,
             'star_range': range(5)
         }
         return render(request, 'store/admin/feedbacks.html', context)
@@ -194,31 +192,39 @@ class FeedbackView(LoginRequiredMixin, BaseOntologyView):
         if request.session.get('user_type') != 'admin':
             raise PermissionDenied
             
-        feedback_id = request.POST.get('feedback_id')
-        if not feedback_id:
-            messages.error(request, 'Feedback ID is required')
-            return redirect('view_feedbacks')
-            
         try:
-            # Delete from database
-            feedback = get_object_or_404(Feedback, id=feedback_id)
-            feedback.delete()  # Delete the feedback from the database
-            return redirect('view_feedbacks')
+            feedback_id = request.POST.get('feedback_id')
+            if not feedback_id:
+                messages.error(request, 'Feedback ID is required')
+                return redirect('view_feedbacks')
+            
+            # Create the full URI for the feedback
+            feedback_uri = URIRef(self.ECOM_NS + feedback_id)
+            
+            # Check if feedback exists in the ontology
+            if (feedback_uri, RDF.type, self.ECOM_NS.Feedback) not in self.graph:
+                messages.error(request, 'Feedback not found in the system')
+                return redirect('view_feedbacks')
+            
+            # Delete from database (if it exists)
+            try:
+                feedback = get_object_or_404(Feedback, id=feedback_id)
+                feedback.delete()
+            except Exception as e:
+                print(f"Database deletion error (non-critical): {str(e)}")
             
             # Delete from ontology
-            feedback_uri = URIRef(self.ECOM_NS + feedback_id)
-            for p, o in self.graph.predicate_objects(feedback_uri):
+            for p, o in list(self.graph.predicate_objects(feedback_uri)):
                 self.graph.remove((feedback_uri, p, o))
             
-            # Save the updated ontology
             self.save_graph()
             
             messages.success(request, 'Feedback deleted successfully')
+            
         except Exception as e:
             messages.error(request, f'Error deleting feedback: {str(e)}')
-            
+        
         return redirect('view_feedbacks')
-
 
 class UserDashboardView(LoginRequiredMixin, BaseOntologyView):
     """User dashboard view with integrated product display"""
@@ -313,7 +319,6 @@ class AdminProductView(LoginRequiredMixin, ProductView):
                 print(f"Error processing product {product}: {e}")
                 continue
         return products
-    
     
     def get(self, request, product_id=None):
         if request.session.get('user_type') != 'admin':

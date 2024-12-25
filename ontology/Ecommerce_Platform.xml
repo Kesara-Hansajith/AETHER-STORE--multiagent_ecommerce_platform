@@ -66,14 +66,6 @@
     <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Task"/>
     <responsibilityDescription>Handle customer inquiries and complaints.</responsibilityDescription>
   </rdf:Description>
-  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#4afde8a2-9058-4b19-b8d8-825c94ac26b9">
-    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Feedback"/>
-    <feedbackUser rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nirmal</feedbackUser>
-    <userEmail rdf:datatype="http://www.w3.org/2001/XMLSchema#string">nirmalbandara@gmail.com</userEmail>
-    <rating rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</rating>
-    <comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The navigation menu is good, but adding more categories or organizing the products into subcategories could make it even easier to find what I’m looking for</comment>
-    <submissionDate rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2024-12-25T17:04:25.659166</submissionDate>
-  </rdf:Description>
   <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#e6ec549d-1b79-494f-a49e-2cb79e92d93d">
     <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Feedback"/>
     <feedbackUser rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Anura Kuma</feedbackUser>
@@ -111,6 +103,15 @@
     <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">39</stockLevel>
     <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">60.0</discount>
     <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\abafryaf50cdglar1.webp</hasImage>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#12adbd3c-1ce3-454b-8697-9073ae856a95">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Order"/>
+    <customer rdf:datatype="http://www.w3.org/2001/XMLSchema#string">JohnDoe</customer>
+    <product rdf:resource="http://www.example.org/ecommerce_ontology#hp_ink_tank_115_printer"/>
+    <quantity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</quantity>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">45600.0</price>
+    <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">pending</status>
+    <orderDate rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2024-12-25T17:14:26.330098</orderDate>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#CustomerAgent1">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
@@ -158,14 +159,6 @@
     <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</discount>
     <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\bdlpz2lar.png</hasImage>
   </rdf:Description>
-  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#hp_ink_tank_115_printer">
-    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
-    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HP Ink Tank 115 Printer</name>
-    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">45600.0</price>
-    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">31</stockLevel>
-    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</discount>
-    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\bdlphp115n1.png</hasImage>
-  </rdf:Description>
   <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#CentralCoordinationAgent1">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
     <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#CentralCoordinationAgent"/>
@@ -194,6 +187,14 @@
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
     <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#PromotionAgent"/>
     <hasResponsibility rdf:resource="http://www.example.org/ecommerce_ontology#ManagePromotions"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#hp_ink_tank_115_printer">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HP Ink Tank 115 Printer</name>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">19000.0</price>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</stockLevel>
+    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</discount>
+    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\bdlphp115n1.png</hasImage>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#places">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>

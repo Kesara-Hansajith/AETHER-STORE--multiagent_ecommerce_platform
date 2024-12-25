@@ -76,8 +76,8 @@ class LoginView(View):
         messages.error(request, f'Invalid {form_type} credentials')
         return render(request, 'store/index.html', {'error': f'Invalid {form_type} credentials'})
 
-class AddFeedbackView(LoginRequiredMixin, View):
-    """Handle user feedback submission"""
+class AddFeedbackView(LoginRequiredMixin, BaseOntologyView):
+    """Handle user feedback submission with ontology integration"""
     def get(self, request):
         if request.session.get('user_type') != 'user':
             raise PermissionDenied
@@ -113,15 +113,37 @@ class AddFeedbackView(LoginRequiredMixin, View):
                 messages.error(request, 'Invalid rating value')
                 return redirect('add_feedback')
                 
-            # Create feedback
+            # Generate UUID first - this will be used for both database and ontology
+            feedback_id = str(uuid.uuid4())
+            
+            # Create feedback in database with the same UUID
             feedback = Feedback.objects.create(
+                id=feedback_id,  # Use the UUID as the primary key
                 user=name,
                 rating=rating,
                 comment=feedback_text
             )
             
+            # Add feedback to ontology using the same UUID
+            feedback_uri = URIRef(self.ECOM_NS + feedback_id)
+            
+            # Add feedback properties to graph
+            feedback_properties = [
+                (RDF.type, self.ECOM_NS.Feedback),
+                (self.ECOM_NS.feedbackUser, Literal(name, datatype=XSD.string)),
+                (self.ECOM_NS.userEmail, Literal(email, datatype=XSD.string)),
+                (self.ECOM_NS.rating, Literal(rating, datatype=XSD.integer)),
+                (self.ECOM_NS.comment, Literal(feedback_text, datatype=XSD.string)),
+                (self.ECOM_NS.submissionDate, Literal(datetime.now().isoformat(), datatype=XSD.dateTime))
+            ]
+            
+            for predicate, obj in feedback_properties:
+                self.graph.add((feedback_uri, predicate, obj))
+                
+            self.save_graph()
+            
             messages.success(request, 'Thank you for your feedback!')
-            return redirect('user_product_list')  # Redirect to products page after submission
+            return redirect('add_feedback')
             
         except Exception as e:
             messages.error(request, f'Error submitting feedback: {str(e)}')
@@ -129,49 +151,97 @@ class AddFeedbackView(LoginRequiredMixin, View):
 
 
 class FeedbackView(LoginRequiredMixin, BaseOntologyView):
-    """View for handling feedback display and management"""
+    """View for handling feedback display and management with ontology integration"""
     def get(self, request):
         if request.session.get('user_type') != 'admin':
             raise PermissionDenied
             
-        # Get all feedback ordered by creation date
-        feedback_list = Feedback.objects.all().order_by('-created_at')
+        feedbacks = []
+        # Query all feedback from ontology
+        for feedback in self.graph.subjects(RDF.type, self.ECOM_NS.Feedback):
+            try:
+                feedback_data = {
+                    'id': str(feedback).split('#')[-1],
+                    'user': str(self.graph.value(feedback, self.ECOM_NS.feedbackUser)),
+                    'email': str(self.graph.value(feedback, self.ECOM_NS.userEmail)),
+                    'rating': int(self.graph.value(feedback, self.ECOM_NS.rating)),
+                    'comment': str(self.graph.value(feedback, self.ECOM_NS.comment)),
+                    'created_at': self.graph.value(feedback, self.ECOM_NS.submissionDate)
+                }
+                feedbacks.append(feedback_data)
+            except Exception as e:
+                print(f"Error processing feedback {feedback}: {str(e)}")
+                continue
         
-        # Paginate the feedback list - 10 items per page
-        paginator = Paginator(feedback_list, 10)
+        # Sort feedbacks by submission date (newest first)
+        feedbacks.sort(key=lambda x: x['created_at'], reverse=True)
+        
+        # Paginate the feedback list
+        paginator = Paginator(feedbacks, 10)
         page = request.GET.get('page')
-        feedbacks = paginator.get_page(page)
+        paginated_feedbacks = paginator.get_page(page)
         
         context = {
-            'feedbacks': feedbacks,
+            'feedbacks': paginated_feedbacks,
             'star_range': range(5)
         }
         return render(request, 'store/admin/feedbacks.html', context)
     
     def post(self, request):
-        """Handle feedback deletion"""
+        """Handle feedback deletion from both database and ontology"""
         if request.session.get('user_type') != 'admin':
             raise PermissionDenied
             
-        feedback_id = request.POST.get('feedback_id')
         try:
-            feedback = get_object_or_404(Feedback, id=feedback_id)
-            feedback.delete()
+            feedback_id = request.POST.get('feedback_id')
+            if not feedback_id:
+                messages.error(request, 'Feedback ID is required')
+                return redirect('view_feedbacks')
+            
+            # Create the full URI for the feedback
+            feedback_uri = URIRef(self.ECOM_NS + feedback_id)
+            
+            # Check if feedback exists in the ontology
+            if (feedback_uri, RDF.type, self.ECOM_NS.Feedback) not in self.graph:
+                messages.error(request, 'Feedback not found in the system')
+                return redirect('view_feedbacks')
+            
+            # Delete from database (if it exists)
+            try:
+                feedback = get_object_or_404(Feedback, id=feedback_id)
+                feedback.delete()
+            except Exception as e:
+                print(f"Database deletion error (non-critical): {str(e)}")
+            
+            # Delete from ontology
+            for p, o in list(self.graph.predicate_objects(feedback_uri)):
+                self.graph.remove((feedback_uri, p, o))
+            
+            self.save_graph()
+            
             messages.success(request, 'Feedback deleted successfully')
+            
         except Exception as e:
             messages.error(request, f'Error deleting feedback: {str(e)}')
-            
+        
         return redirect('view_feedbacks')
 
 class UserDashboardView(LoginRequiredMixin, BaseOntologyView):
-    """User dashboard view"""
+    """User dashboard view with integrated product display"""
     def get(self, request):
         if request.session.get('user_type') != 'user':
             raise PermissionDenied
         
+        # Create instance of ProductView to access product methods
+        product_view = UserProductView()
+        promotional_products, regular_products = product_view.get_products_by_discount()
+        
         context = {
             'username': request.session.get('username'),
-            'last_login': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            'last_login': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'promotional_products': promotional_products,
+            'regular_products': regular_products,
+            'MEDIA_URL': settings.MEDIA_URL
         }
         return render(request, 'store/baseUser.html', context)
 
@@ -184,8 +254,10 @@ class AdminDashboardView(LoginRequiredMixin, BaseOntologyView):
 
 class ProductView(BaseOntologyView):
     """Base class for product views"""
-    def get_all_products(self):
-        products = []
+    def get_products_by_discount(self):
+        promotional_products = []
+        regular_products = []
+        
         for product in self.graph.subjects(RDF.type, self.ECOM_NS.Product):
             try:
                 product_data = {
@@ -200,39 +272,177 @@ class ProductView(BaseOntologyView):
                 product_data['final_price'] = round(
                     product_data['price'] * (1 - product_data['discount']/100), 2
                 )
-                products.append(product_data)
+                
+                # Separate products based on discount
+                if product_data['discount'] > 0:
+                    promotional_products.append(product_data)
+                else:
+                    regular_products.append(product_data)
+                    
             except Exception as e:
                 print(f"Error processing product {product}: {e}")
                 continue
-        return products
+                
+        return promotional_products, regular_products
 
 class UserProductView(LoginRequiredMixin, ProductView):
     """User product listing view"""
     def get(self, request):
         if request.session.get('user_type') != 'user':
             raise PermissionDenied
+            
+        promotional_products, regular_products = self.get_products_by_discount()
+        
         return render(request, 'store/user/userproducts.html', {
-            'userproducts': self.get_all_products(),
+            'promotional_products': promotional_products,
+            'regular_products': regular_products,
             'MEDIA_URL': settings.MEDIA_URL
         })
 
 class AdminProductView(LoginRequiredMixin, ProductView):
-    """Admin product management view"""
-    def get(self, request):
+    
+    def get_all_products(self):
+        products = []
+        for product in self.graph.subjects(RDF.type, self.ECOM_NS.Product):
+            try:
+                product_id = str(product).split('#')[-1]
+                product_data = {
+                    'id': product_id,
+                    'name': str(self.graph.value(product, self.ECOM_NS.name)),
+                    'price': float(self.graph.value(product, self.ECOM_NS.price)),
+                    'stock': int(self.graph.value(product, self.ECOM_NS.stockLevel)),
+                    'discount': float(self.graph.value(product, self.ECOM_NS.discount, default=Literal(0.0))),
+                    'image': str(self.graph.value(product, self.ECOM_NS.hasImage, default=Literal("default_image.jpg")))
+                }
+                products.append(product_data)
+            except Exception as e:
+                print(f"Error processing product {product}: {e}")
+                continue
+        return products
+    
+    def get(self, request, product_id=None):
         if request.session.get('user_type') != 'admin':
             raise PermissionDenied
+        
+        if product_id:
+            try:
+                product_uri = URIRef(self.ECOM_NS + product_id)
+                if (product_uri, RDF.type, self.ECOM_NS.Product) not in self.graph:
+                    messages.error(request, 'Product not found')
+                    return redirect('admin_product_list')
+                
+                product = {
+                    'id': product_id,
+                    'name': str(self.graph.value(product_uri, self.ECOM_NS.name)),
+                    'price': float(self.graph.value(product_uri, self.ECOM_NS.price)),
+                    'stock': int(self.graph.value(product_uri, self.ECOM_NS.stockLevel)),
+                    'discount': float(self.graph.value(product_uri, self.ECOM_NS.discount, default=Literal(0.0))),
+                    'image': str(self.graph.value(product_uri, self.ECOM_NS.hasImage, default=Literal("default_image.jpg")))
+                }
+                return render(request, 'store/admin/update_product.html', {'product': product})
+            except Exception as e:
+                messages.error(request, f'Error loading product: {str(e)}')
+                return redirect('admin_product_list')
+        
         return render(request, 'store/admin/adminproducts.html', {
             'adminproducts': self.get_all_products(),
             'MEDIA_URL': settings.MEDIA_URL
         })
+
+    def post(self, request, product_id):
+        if request.session.get('user_type') != 'admin':
+            raise PermissionDenied
+
+        try:
+            product_uri = URIRef(self.ECOM_NS + product_id)
+            
+            if (product_uri, RDF.type, self.ECOM_NS.Product) not in self.graph:
+                messages.error(request, 'Product not found')
+                return redirect('admin_product_list')
+
+            action = request.POST.get('action')
+
+            if action == 'delete':
+                # Get current image path before deleting
+                current_image = str(self.graph.value(product_uri, self.ECOM_NS.hasImage))
+                if current_image and current_image != "default_image.jpg":
+                    # Delete the image file if it exists
+                    image_path = os.path.join(settings.MEDIA_ROOT, current_image)
+                    if os.path.exists(image_path):
+                        os.remove(image_path)
+
+                # Remove all triples about this product
+                for p, o in self.graph.predicate_objects(product_uri):
+                    self.graph.remove((product_uri, p, o))
+                messages.success(request, 'Product deleted successfully')
+                
+            elif action == 'update':
+                # Update basic product information
+                updates = {
+                    self.ECOM_NS.price: Literal(float(request.POST.get('price', 0)), 
+                                              datatype=XSD.float),
+                    self.ECOM_NS.stockLevel: Literal(int(request.POST.get('stock_level', 0)), 
+                                                   datatype=XSD.integer),
+                    self.ECOM_NS.discount: Literal(float(request.POST.get('discount', 0)), 
+                                                 datatype=XSD.float)
+                }
+
+                # Handle image update
+                if request.FILES.get('image'):
+                    # Delete old image if it exists and isn't the default
+                    current_image = str(self.graph.value(product_uri, self.ECOM_NS.hasImage))
+                    if current_image and current_image != "default_image.jpg":
+                        old_image_path = os.path.join(settings.MEDIA_ROOT, current_image)
+                        if os.path.exists(old_image_path):
+                            os.remove(old_image_path)
+
+                    # Save new image
+                    image = request.FILES['image']
+                    image_path = os.path.join('product_images', image.name)
+                    full_path = os.path.join(settings.MEDIA_ROOT, image_path)
+                    
+                    # Ensure directory exists
+                    os.makedirs(os.path.dirname(full_path), exist_ok=True)
+                    
+                    with open(full_path, 'wb+') as f:
+                        for chunk in image.chunks():
+                            f.write(chunk)
+                    
+                    updates[self.ECOM_NS.hasImage] = Literal(image_path, datatype=XSD.string)
+
+                # Update the graph
+                for predicate, new_value in updates.items():
+                    old_value = self.graph.value(product_uri, predicate)
+                    if old_value:
+                        self.graph.remove((product_uri, predicate, old_value))
+                    self.graph.add((product_uri, predicate, new_value))
+
+                messages.success(request, 'Product updated successfully')
+
+            self.save_graph()
+            return redirect('admin_product_list')
+            
+        except Exception as e:
+            messages.error(request, f'Error processing product: {str(e)}')
+            return redirect('admin_product_list')
 
 class OrderView(LoginRequiredMixin, BaseOntologyView):
     """Handle order creation and management"""
     def get(self, request):
         if request.session.get('user_type') != 'user':
             raise PermissionDenied
-        products = UserProductView().get_all_products()
-        return render(request, 'store/user/order_form.html', {'products': products})
+            
+        # Get both promotional and regular products
+        user_product_view = UserProductView()
+        promotional_products, regular_products = user_product_view.get_products_by_discount()
+        
+        # Combine all products for the order form
+        all_products = promotional_products + regular_products
+        
+        return render(request, 'store/user/order_form.html', {
+            'products': all_products,
+            'MEDIA_URL': settings.MEDIA_URL
+        })
     
     def post(self, request):
         try:
@@ -260,6 +470,14 @@ class OrderView(LoginRequiredMixin, BaseOntologyView):
                 messages.error(request, f'Insufficient stock. Only {stock} available')
                 return redirect('order')
             
+            # Get product price and discount
+            price = float(self.graph.value(product, self.ECOM_NS.price))
+            discount = float(self.graph.value(product, self.ECOM_NS.discount, 
+                                            default=Literal(0.0)))
+            
+            # Calculate final price
+            final_price = price * (1 - discount/100)
+            
             # Create order
             order_id = str(uuid.uuid4())
             order = URIRef(self.ECOM_NS + order_id)
@@ -271,6 +489,7 @@ class OrderView(LoginRequiredMixin, BaseOntologyView):
                                               datatype=XSD.string)),
                 (self.ECOM_NS.product, product),
                 (self.ECOM_NS.quantity, Literal(quantity, datatype=XSD.integer)),
+                (self.ECOM_NS.price, Literal(final_price, datatype=XSD.float)),
                 (self.ECOM_NS.status, Literal("pending", datatype=XSD.string)),
                 (self.ECOM_NS.orderDate, Literal(datetime.now().isoformat(), 
                                                datatype=XSD.dateTime))

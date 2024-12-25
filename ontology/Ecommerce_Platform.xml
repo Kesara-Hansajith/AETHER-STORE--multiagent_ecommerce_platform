@@ -3,14 +3,6 @@
    xmlns="http://www.example.org/ecommerce_ontology#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 >
-  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#samsung_galaxy_s11">
-    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
-    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Samsung Galaxy S11</name>
-    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">200000.0</price>
-    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">20</stockLevel>
-    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</discount>
-    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\Vector.png</hasImage>
-  </rdf:Description>
   <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#bbe66d88-ba24-4dd7-b674-2619a74488b3">
     <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Order"/>
     <customer rdf:datatype="http://www.w3.org/2001/XMLSchema#string">JohnDoe</customer>
@@ -24,9 +16,12 @@
     <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
     <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Samsung Galaxy S12</name>
     <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">250000.0</price>
-    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">28</stockLevel>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">27</stockLevel>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">20</stockLevel>
     <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">6.0</discount>
+    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</discount>
     <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\images.jpeg</hasImage>
+    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\Hand-Holding-Smartphone-Mockup-2.jpg</hasImage>
   </rdf:Description>
   <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#ee92f638-3501-4180-b4f3-8e452ebf8bfc">
     <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Order"/>
@@ -36,5 +31,22 @@
     <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">235000.0</price>
     <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">pending</status>
     <orderDate rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2024-12-25T09:19:01.926288</orderDate>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#1d02dd6f-450c-4af0-a2c3-aee796f79a21">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Order"/>
+    <customer rdf:datatype="http://www.w3.org/2001/XMLSchema#string">JohnDoe</customer>
+    <product rdf:resource="http://www.example.org/ecommerce_ontology#samsung_galaxy_s12"/>
+    <quantity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</quantity>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">235000.0</price>
+    <status rdf:datatype="http://www.w3.org/2001/XMLSchema#string">pending</status>
+    <orderDate rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2024-12-25T09:45:22.089779</orderDate>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.example.org/ecommerce_ontology#samsung_galaxy_s11">
+    <rdf:type rdf:resource="http://www.example.org/ecommerce_ontology#Product"/>
+    <name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Samsung Galaxy S11</name>
+    <price rdf:datatype="http://www.w3.org/2001/XMLSchema#float">250000.0</price>
+    <stockLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">20</stockLevel>
+    <discount rdf:datatype="http://www.w3.org/2001/XMLSchema#float">0.0</discount>
+    <hasImage rdf:datatype="http://www.w3.org/2001/XMLSchema#string">product_images\Hand-Holding-Smartphone-Mockup-2.jpg</hasImage>
   </rdf:Description>
 </rdf:RDF>

@@ -208,12 +208,10 @@ class FeedbackView(LoginRequiredMixin, BaseOntologyView):
             
             # Delete from database (if it exists)
             try:
-                feedback = Feedback.objects.get(id=feedback_id)
+                feedback = get_object_or_404(Feedback, id=feedback_id)
                 feedback.delete()
-            except Feedback.DoesNotExist:
-                print(f"Feedback {feedback_id} not found in database")
             except Exception as e:
-                print(f"Database deletion error: {str(e)}")
+                print(f"Database deletion error (non-critical): {str(e)}")
             
             # Delete from ontology
             for p, o in list(self.graph.predicate_objects(feedback_uri)):

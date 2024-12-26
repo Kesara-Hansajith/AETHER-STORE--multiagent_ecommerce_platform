@@ -71,7 +71,160 @@
     </nav>
     
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {% block content %}{% endblock %}
+{% block content %}
+
+
+
+
+<div class="relative mb-2">
+    <!-- Slider Container -->
+    <div id="imageSlider" class="relative overflow-hidden rounded-lg h-64 mx-auto" style="width: 1025px;">
+        <!-- Slider Items -->
+        <div class="absolute inset-0 flex transition-transform duration-700 ease-in-out transform" data-slider>
+            <!-- Image 1 -->
+            <div class="min-w-full">
+                <img src="http://127.0.0.1:8000/media/product_images/img1.jpg" alt="Image 1" class="w-full h-full object-cover">
+            </div>
+            <!-- Image 2 -->
+            <div class="min-w-full">
+                <img src="http://127.0.0.1:8000/media/product_images/img2.jpg" alt="Image 2" class="w-full h-full object-cover">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Promotions Section -->
+{% if promotional_products %}
+<div class="bg-white shadow-lg rounded-lg max-w-5xl mx-auto mt-1 p-8">
+    <div>
+        <h3 class="text-2xl font-semibold text-gray-800">Promotions of the Week</h3>
+    </div>    
+
+    <div class="mt-8 border-t border-gray-200 pt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {% for product in promotional_products %}
+        <div class="bg-yellow-50 border border-gray-200 shadow-sm rounded-lg hover:shadow-md transition-shadow duration-300">
+            <img src="{{ MEDIA_URL }}{{ product.image|default:'default_image.jpg' }}" alt="{{ product.name }}" class="w-full h-48 object-cover rounded-t-lg">
+            <div class="p-6">
+                <h4 class="text-lg font-medium text-gray-900">{{ product.name }}</h4>
+                <div class="mt-3"> 
+                    <div class="flex items-center space-x-1">
+                        <p class="text-sm text-gray-500"><span class="line-through">Rs.{{ product.price|floatformat:2 }}</span></p>
+                        <p class="px-2 py-1 text-sm font-semibold text-red-800 bg-red-100 rounded-full">- {{ product.discount }}%</p>
+                    </div>
+                    <p class="text-xl font-bold text-indigo-600 mt-1">Rs.{{ product.final_price|floatformat:2 }}</p>
+                    <p class="text-sm text-gray-500 mt-1">
+                        Stock: 
+                        <span class="{% if product.stock == 0 %}text-red-600{% else %}text-gray-700{% endif %}">
+                            {{ product.stock }}
+                        </span>
+                    </p>
+                </div>
+                <div class="mt-4">
+                    {% if product.stock > 0 %}
+                    <a href="{% url 'place_order' %}?product={{ product.name }}" 
+                        class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-300">
+                        Order Now
+                    </a>
+                    {% else %}
+                    <span class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-500 bg-gray-200 cursor-not-allowed">
+                        Out of Stock
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Regular Products Section -->
+{% if regular_products %}
+<div class="bg-white shadow-lg rounded-lg max-w-5xl mx-auto mt-10 p-8">
+    <div>
+        <h3 class="text-2xl font-semibold text-gray-800">Available Products</h3>
+        <p class="text-sm text-gray-600 mt-2">Browse and order from our curated collection of products managed by our Product Agent.</p>
+    </div>    
+
+    <div class="mt-8 border-t border-gray-200 pt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {% for product in regular_products %}
+        <div class="bg-gray-50 border border-gray-200 shadow-sm rounded-lg hover:shadow-md transition-shadow duration-300">
+            <img src="{{ MEDIA_URL }}{{ product.image|default:'default_image.jpg' }}" alt="{{ product.name }}" class="w-full h-48 object-cover rounded-t-lg">
+            <div class="p-6">
+                <h4 class="text-lg font-medium text-gray-900">{{ product.name }}</h4>
+                <div class="mt-3"> 
+                    <p class="text-xl font-bold text-gray-700 mt-1">Rs. {{ product.price|floatformat:2 }}</p>
+                    <p class="text-sm text-gray-500 mt-1">
+                        Stock: 
+                        <span class="{% if product.stock == 0 %}text-red-600{% else %}text-gray-700{% endif %}">
+                            {{ product.stock }}
+                        </span>
+                    </p>
+                </div>
+                <div class="mt-4">
+                    {% if product.stock > 0 %}
+                    <a href="{% url 'place_order' %}?product={{ product.name }}" 
+                        class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-300">
+                        Order Now
+                    </a>
+                    {% else %}
+                    <span class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-500 bg-gray-200 cursor-not-allowed">
+                        Out of Stock
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const slider = document.querySelector("[data-slider]");
+        let currentIndex = 0;
+        const slideCount = slider.children.length;
+        const autoScrollInterval = 7000; // Auto-scroll every 7 seconds
+        let autoScroll;
+
+        // Function to update slider position
+        function updateSlider() {
+            slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+        }
+
+        // Go to the previous slide
+        function showPrevSlide() {
+            currentIndex = (currentIndex > 0) ? currentIndex - 1 : slideCount - 1;
+            updateSlider();
+        }
+
+        // Go to the next slide
+        function showNextSlide() {
+            currentIndex = (currentIndex < slideCount - 1) ? currentIndex + 1 : 0;
+            updateSlider();
+        }
+
+        // Start auto-scrolling
+        function startAutoScroll() {
+            autoScroll = setInterval(showNextSlide, autoScrollInterval);
+        }
+
+        // Stop auto-scrolling
+        function stopAutoScroll() {
+            clearInterval(autoScroll);
+        }
+
+        // Initialize the slider
+        updateSlider();
+        startAutoScroll();
+    });
+</script>
+
+
+{% endblock %}
+
     </div>
 
     <script>

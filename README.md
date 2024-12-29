@@ -3,6 +3,7 @@
 
 AETHER STORE is an innovative e-commerce platform that goes beyond traditional concepts by implementing a multi-agent system. It uses specialized autonomous agents to manage various aspects of the platform, such as customer interactions, product recommendations, inventory, and feedback analysis. This decentralized approach optimizes operations, enhances user experiences, and ensures scalability.
 
+---
 
 ## Ontology in the AETHER STORE MAS
 
@@ -10,34 +11,7 @@ The AETHER STORE Multi-Agent E-Commerce Platform aims to simulate the functionin
 
 ![Screenshot1](https://github.com/user-attachments/assets/7b5a0f2a-9afc-4272-b100-d5127169cd8f)
 
-# E-commerce Platform
 
-This project is a multi-agent e-commerce platform developed using Django. It is designed to streamline online shopping, provide administrators with robust tools for managing products, orders, and user feedback, and ensure a seamless experience for end users.
-
----
-
-## Features
-
-### Admin Features
-- **Admin Dashboard**
-  - Add new products.
-  - View and manage current products.
-- **Product Management**
-  - View all products in the system.
-  - Update product details (name, price, description).
-  - Delete products.
-- **Order Management**
-  - View all user orders for tracking and processing.
-- **Feedback Management**
-  - View feedback provided by users with a star rating system.
-  - Delete feedback items one by one.
-
-### User Authentication System
-- Secure login system with role-based differentiation.
-- Toggle feature to switch between user and admin dashboards.
-- Robust input validation with error handling for incorrect credentials.
-
----
 
 ## Technologies Used
 - **Backend**: Django
@@ -57,7 +31,7 @@ This project is a multi-agent e-commerce platform developed using Django. It is 
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/<your-username>/ecommerce_project.git
+   git clone https://github.com/Kesara-Hansajith/AETHER-STORE--multiagent_ecommerce_platform.git
    ```
 2. Navigate to the project directory:
    ```bash
@@ -122,7 +96,4 @@ This project is licensed under the MIT License. See the `LICENSE` file for more 
 
 ---
 
-## Author
-
-Developed by [Your Name].
 
